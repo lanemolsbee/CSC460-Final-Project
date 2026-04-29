@@ -11,7 +11,95 @@ public class Prog4 {
     }
 
     // functionality #1 - Pearl
-    public boolean manageAccount() {
+
+    // add account
+    public int addUser(Connection conn, String name, String email, String language, int tierID) {
+        String sqlStatement = "INSERT INTO orvik.Users (userId, name, email, creationDate, language, tierId) VALUES (users_seq.nextval, ?, ?, ?, ?, ?)";
+        try {
+            String[] generatedCols = {"userId"};
+            int userId = -1;
+            PreparedStatement stmt = conn.prepareStatement(sqlStatement, generatedCols);
+            stmt.setString(1, name);
+            stmt.setString(2, email);
+            stmt.setTimestamp(3, new Timestamp(LocalTime.now().toNanoOfDay()));
+            stmt.setString(4, language);
+            stmt.setInt(5, tierID);
+            stmt.executeUpdate();
+            stmt.close();
+
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                userId = rs.getInt(1);
+            }
+            return userId;
+        } catch (SQLException e) {
+            System.err.println("Could not create a new user! : " + e.getMessage());
+            return -1;
+        }
+    }
+
+    // use last two for extra values to change
+    // make changeStr NULL if not necessary
+    // make newtier NULL if not necessary
+    public boolean updateUser(Connection conn, int userID, String toUpdate, String changeStr, int newTier) {
+        // update name
+        if (toUpdate.equals("name")) {
+            String sqlStatement = "UPDATE orvik.invoice SET name = ? WHERE userId = ?";
+            try {
+                PreparedStatement stmt = conn.prepareStatement(sqlStatement);
+                stmt.setString(1, changeStr);
+                stmt.executeUpdate();
+                stmt.close();
+                return true;
+            } catch (SQLException e) {
+                System.err.println("Could not update name! : " + e.getMessage());
+                return false;
+            }
+        }
+        // update email
+        else if (toUpdate.equals("email")) {
+            String sqlStatement = "UPDATE orvik.invoice SET email = ? WHERE userId = ?";
+            try {
+                PreparedStatement stmt = conn.prepareStatement(sqlStatement);
+                stmt.setString(1, changeStr);
+                stmt.executeUpdate();
+                stmt.close();
+                return true;
+            } catch (SQLException e) {
+                System.err.println("Could not update email! : " + e.getMessage());
+                return false;
+            }
+        }
+        // update language
+        else if (toUpdate.equals("language")) {
+            String sqlStatement = "UPDATE orvik.invoice SET language = ? WHERE userId = ?";
+            try {
+                PreparedStatement stmt = conn.prepareStatement(sqlStatement);
+                stmt.setString(1, changeStr);
+                stmt.executeUpdate();
+                stmt.close();
+                return true;
+            } catch (SQLException e) {
+                System.err.println("Could not update language! : " + e.getMessage());
+                return false;
+            }
+        }
+        // update membership tier
+        else if (toUpdate.equals("tierId")) {
+            return updateSubscription(conn, userID, newTier);
+        }
+        return false;
+    }
+
+    // return false if unable to delete
+    public boolean deleteUser(int userID) {
+        String sqlStatement = "DELETE FROM orvik.Users WHERE userId = ?";
+
+        // must check invoice table
+        // if any unpaid --> return false
+        // must check support ticket table
+        // if any open with user id --> return false
+
         return true;
     }
 
@@ -96,7 +184,15 @@ public class Prog4 {
     }
 
     // functionality #3 - Pearl
-    public boolean manageWorkspace() {
+    // the system must verify that a user belongs to a workspace before they can move a conversation into it
+
+    // create workspace
+    public boolean createWorkspace() {
+        return true;
+    }
+
+    // modify workspace
+    public boolean modifyWorkspace() {
         return true;
     }
 
@@ -160,8 +256,65 @@ public class Prog4 {
     }
 
     // functionality #5 - Pearl
-    public boolean managePrompt() {
-        return true;
+
+    // add prompt template
+    public int addPromptTemplate(Connection conn, String title, String content, int userID, int workspaceID) {
+        String sqlStatement = "INSERT INTO orvik.promptTemplace (templateId, title, content, userId, workspaceId) VALUES (promptTemplace_seq.nextval, ?, ?, ?, ?)";
+        try {
+            String[] generatedCols = {"templateId"};
+            PreparedStatement stmt = conn.prepareStatement(sqlStatement, generatedCols);
+            int templateId = -1;
+            stmt.setString(1, title);
+            stmt.setString(2, content);
+            stmt.setInt(3, userID);
+            stmt.setInt(4, workspaceID);
+            stmt.executeUpdate();
+            stmt.close();
+
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                templateId = rs.getInt(1);
+            }
+            return templateId;
+        } catch (SQLException e) {
+            System.err.println("Could not create prompt template! : " + e.getMessage());
+            return -1;
+        }
+    }
+
+    // update prompt template
+    // last value new string value
+    public boolean updatePromptTemplate(Connection conn, int userID, int workplaceID, int templateID, String toUpdate, String changeStr) {
+        // need to check what should be updated
+        if (toUpdate.equals("title")) {
+            String sqlStatement = "UPDATE orvik.promptTemplate SET title = ? WHERE templateId = ?";
+            try {
+                PreparedStatement stmt = conn.prepareStatement(sqlStatement);
+                stmt.setString(1, changeStr);
+                stmt.setInt(2, templateID);
+                stmt.executeUpdate();
+                stmt.close();
+                return true;
+            } catch (SQLException e) {
+                System.err.println("Could not update prompt template title! : " + e.getMessage());
+                return false;
+            }
+        }
+        else if (toUpdate.equals("content")) {
+            String sqlStatement = "UPDATE orvik.promptTemplate SET content = ? WHERE templateId = ?";
+            try {
+                PreparedStatement stmt = conn.prepareStatement(sqlStatement);
+                stmt.setString(1, changeStr);
+                stmt.setInt(2, templateID);
+                stmt.executeUpdate();
+                stmt.close();
+                return true;
+            } catch (SQLException e) {
+                System.err.println("Could not update prompt template content! : " + e.getMessage());
+                return false;
+            }
+        }
+        return false;
     }
 
     // functionality #6 - Jordan
@@ -208,8 +361,45 @@ public class Prog4 {
 }
 
     // functionality #7 - Pearl
-    public boolean billingOperations() {
-        return true;
+
+    // generate a new invoice for a user's monthly tier fee
+    public int newInvoice(Connection conn, int userID, int amount) {
+        String sqlStatement = "INSERT INTO orvik.invoice (invoiceId, userId, amount, date, status) VALUES (invoice_seq.nextval, ?, ?, ?, ?)";
+        try {
+            String[] generatedCols = {"invoiceId"};
+            PreparedStatement stmt = conn.prepareStatement(sqlStatement, generatedCols);
+            int invoiceId = -1;
+            stmt.setInt(1, userID);
+            stmt.setDouble(2, amount);
+            stmt.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
+            stmt.setString(4, "UNPAID");
+            stmt.executeUpdate();
+            stmt.close();
+
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                invoiceId = rs.getInt(1);
+            }
+            return invoiceId;
+        } catch (SQLException e) {
+            System.err.println("Could not create invoice! : " + e.getMessage());
+            return -1;
+        }
+    }
+
+    // mark an existing invoice as "Paid"
+    public boolean paidBill(Connection conn, int invoiceID) {
+        String sqlStatement = "UPDATE orvik.invoice SET status = ? WHERE invoiceId = ?";
+        try {
+            PreparedStatement stmt = conn.prepareStatement(sqlStatement);
+            stmt.setString(1, "PAID");
+            stmt.executeUpdate();
+            stmt.close();
+            return true;
+        } catch (SQLException e) {
+            System.err.println("Could not update invoice! : " + e.getMessage());
+            return false;
+        }
     }
 
     // functionality #8 - Jordan
