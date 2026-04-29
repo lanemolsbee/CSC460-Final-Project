@@ -12,6 +12,7 @@ DROP TABLE workspace CASCADE CONSTRAINTS;
 DROP TABLE persona CASCADE CONSTRAINTS;
 DROP TABLE Users CASCADE CONSTRAINTS;
 DROP TABLE membershipTier CASCADE CONSTRAINTS;
+DROP TABLE agent CASCADE CONSTRAINTS;
 
 -- 1. membershipTier (no dependencies)
 CREATE TABLE membershipTier(
@@ -31,11 +32,18 @@ CREATE TABLE Users(
     FOREIGN KEY (tierId) REFERENCES membershipTier(tierId)
 );
 
+CREATE TABLE agent(
+    agentId INT PRIMARY KEY,
+    FOREIGN KEY (agentId) REFERENCES Users(userId)
+);
+
 -- 3. persona (independent)
 CREATE TABLE persona(
     personaId INT PRIMARY KEY,
     name VARCHAR2(255) NOT NULL,
-    instructions CLOB NOT NULL
+    instructions CLOB NOT NULL,
+    userId INT,
+    FOREIGN KEY (userId) REFERENCES Users(userId)
 );
 
 -- 4. workspace (independent)
@@ -121,7 +129,7 @@ CREATE TABLE supportTicket(
     duration INT NOT NULL,
     outcome VARCHAR2(255) NOT NULL,
     FOREIGN KEY (userId) REFERENCES Users(userId),
-    FOREIGN KEY (agentId) REFERENCES Users(userId)
+    FOREIGN KEY (agentId) REFERENCES agent(agentId)
 );
 
 -- 13. invoice (depends on Users)
@@ -162,11 +170,17 @@ INSERT INTO Users VALUES (3, 'Charlie Lee', 'charlie@example.com', CURRENT_TIMES
 INSERT INTO Users VALUES (4, 'Dana White', 'dana@example.com', CURRENT_TIMESTAMP, 'French', 2);
 
 -- =========================
+-- 2.5 agent
+-- =========================
+INSERT INTO agent VALUES (1);
+INSERT INTO agent VALUES (2);
+
+-- =========================
 -- 3. persona
 -- =========================
-INSERT INTO persona VALUES (1, 'Technical Writer', 'Provide detailed and structured explanations.');
-INSERT INTO persona VALUES (2, 'Beginner Helper', 'Explain concepts simply and clearly.');
-INSERT INTO persona VALUES (3, 'Senior Architect', 'Focus on system design and scalability.');
+INSERT INTO persona VALUES (1, 'Technical Writer', 'Provide detailed and structured explanations.', 1);
+INSERT INTO persona VALUES (2, 'Beginner Helper', 'Explain concepts simply and clearly.', 2);
+INSERT INTO persona VALUES (3, 'Senior Architect', 'Focus on system design and scalability.', 1);
 
 -- =========================
 -- 4. workspace
@@ -247,3 +261,5 @@ INSERT INTO invoice VALUES (4, 1, 25.00, CURRENT_TIMESTAMP, 'PAID');
 INSERT INTO supportTicket VALUES (1, 2, 1, 'Billing Issue', 30, 'RESOLVED');
 INSERT INTO supportTicket VALUES (2, 3, 1, 'Model Error', 45, 'ESCALATED');
 INSERT INTO supportTicket VALUES (3, 4, 2, 'Login Problem', 20, 'RESOLVED');
+
+COMMIT;
