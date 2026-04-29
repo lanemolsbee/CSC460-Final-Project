@@ -92,15 +92,61 @@ public class Prog4 {
     }
 
     // return false if unable to delete
-    public boolean deleteUser(int userID) {
-        String sqlStatement = "DELETE FROM orvik.Users WHERE userId = ?";
+    public boolean deleteUser(Connection conn, int userID) {
 
         // must check invoice table
         // if any unpaid --> return false
+        String sqlInvoice = "SELECT COUNT(*) FROM orvik.invoice WHERE userId = ? AND status = ?";
+
+        try {
+            PreparedStatement stmt = conn.prepareStatement(sqlInvoice);
+            stmt.setInt(1, userID);;
+            stmt.setString(2, "UNPAID");
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                System.err.format("Cannot delete user %d, it has unpaid invoices.\n",
+                        userID);
+                stmt.close();
+                rs.close();
+                return false;
+            }
+        } catch (SQLException e) {
+            System.err.println("Could not read from the table: " + e.getMessage());
+            return false;
+        }
+
         // must check support ticket table
         // if any open with user id --> return false
+        String sqlTicket = "SELECT COUNT(*) FROM orvik.supportTicket WHERE userId = ? AND outcome = ?";
 
-        return true;
+        try {
+            PreparedStatement stmt = conn.prepareStatement(sqlTicket);
+            stmt.setInt(1, userID);
+            stmt.setString(2, "OPEN");
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                System.err.format("Cannot delete user %d, it has open support tickets.\n",
+                        userID);
+                stmt.close();
+                rs.close();
+                return false;
+            }
+        } catch (SQLException e) {
+            System.err.println("Could not read from the table: " + e.getMessage());
+            return false;
+        }
+
+        String sqlStatement = "DELETE FROM orvik.Users WHERE userId = ?";
+        try {
+            PreparedStatement stmt = conn.prepareStatement(sqlStatement);
+            stmt.setInt(1, userID);
+            stmt.executeUpdate();
+            stmt.close();
+            return true;
+        } catch (SQLException e) {
+            System.err.println("Could not write to the table: " + e.getMessage());
+            return false;
+        }
     }
 
     // functionality #2 - Jordan
