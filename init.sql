@@ -267,4 +267,56 @@ INSERT INTO supportTicket VALUES (1, 2, 1, 'Billing Issue', 30, 'RESOLVED');
 INSERT INTO supportTicket VALUES (2, 3, 1, 'Model Error', 45, 'ESCALATED');
 INSERT INTO supportTicket VALUES (3, 4, 2, 'Login Problem', 20, 'RESOLVED');
 
+-- =========================
+-- EXTRA MESSAGES
+-- =========================
+
+-- Conversation 1 (AWS Setup) - add more depth
+INSERT INTO message VALUES (9, 1, 'USER', 'What is an IAM role?', CURRENT_TIMESTAMP);
+INSERT INTO message VALUES (10, 1, 'AI', 'An IAM role is a secure identity in AWS...', CURRENT_TIMESTAMP);
+INSERT INTO message VALUES (11, 1, 'USER', 'How do I attach policies?', CURRENT_TIMESTAMP);
+INSERT INTO message VALUES (12, 1, 'AI', 'You can attach policies via the IAM console...', CURRENT_TIMESTAMP);
+
+-- Conversation 2 (Python Basics)
+INSERT INTO message VALUES (13, 2, 'USER', 'How do functions work?', CURRENT_TIMESTAMP);
+INSERT INTO message VALUES (14, 2, 'AI', 'Functions are reusable blocks of code...', CURRENT_TIMESTAMP);
+INSERT INTO message VALUES (15, 2, 'USER', 'What is recursion?', CURRENT_TIMESTAMP);
+INSERT INTO message VALUES (16, 2, 'AI', 'Recursion is when a function calls itself...', CURRENT_TIMESTAMP);
+
+-- Conversation 3 (AI Trends)
+INSERT INTO message VALUES (17, 3, 'USER', 'What is a transformer model?', CURRENT_TIMESTAMP);
+INSERT INTO message VALUES (18, 3, 'AI', 'Transformers use attention mechanisms...', CURRENT_TIMESTAMP);
+INSERT INTO message VALUES (19, 3, 'USER', 'How is ChatGPT trained?', CURRENT_TIMESTAMP);
+INSERT INTO message VALUES (20, 3, 'AI', 'It is trained using reinforcement learning...', CURRENT_TIMESTAMP);
+
+-- Conversation 4 (Database Design)
+INSERT INTO message VALUES (21, 4, 'USER', 'What is BCNF?', CURRENT_TIMESTAMP);
+INSERT INTO message VALUES (22, 4, 'AI', 'BCNF ensures no functional dependency violations...', CURRENT_TIMESTAMP);
+INSERT INTO message VALUES (23, 4, 'USER', 'What is a foreign key?', CURRENT_TIMESTAMP);
+INSERT INTO message VALUES (24, 4, 'AI', 'A foreign key links two tables together...', CURRENT_TIMESTAMP);
+
+-- =========================
+-- EXTRA FEEDBACK
+-- =========================
+
+-- Conversation 1
+INSERT INTO feedback VALUES (10, 1, 'Very clear explanation');
+INSERT INTO feedback VALUES (12, 1, 'Helpful AWS detail');
+INSERT INTO feedback VALUES (2, 1, 'Good starter answer');
+
+-- Conversation 2
+INSERT INTO feedback VALUES (14, 1, 'Good explanation');
+INSERT INTO feedback VALUES (16, 0, 'Too abstract');
+INSERT INTO feedback VALUES (4, 1, 'Helpful');
+
+-- Conversation 3
+INSERT INTO feedback VALUES (18, 0, 'Too vague');
+INSERT INTO feedback VALUES (20, 0, 'Not detailed enough');
+INSERT INTO feedback VALUES (6, 0, 'Unclear response');
+
+-- Conversation 4
+INSERT INTO feedback VALUES (22, 1, 'Excellent explanation');
+INSERT INTO feedback VALUES (24, 1, 'Very clear');
+INSERT INTO feedback VALUES (8, 1, 'Great breakdown');
+
 COMMIT;
