@@ -233,8 +233,41 @@ public class Prog4 {
     // the system must verify that a user belongs to a workspace before they can move a conversation into it
 
     // create workspace
-    public boolean createWorkspace() {
-        return true;
+    public int createWorkspace(Connection conn, int userID String name) {
+        String sqlStatement = "INSERT INTO orvik.workspace (workspaceId, name) VALUES (workspace_seq.nextval, ?)";
+        try {
+            String[] generatedCols = {"workspaceId"};
+            int workspaceId = -1;
+            PreparedStatement stmt = conn.prepareStatement(sqlStatement, generatedCols);
+            stmt.setString(1, name);
+            stmt.executeUpdate();
+            stmt.close();
+
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                workspaceId = rs.getInt(1);
+            }
+
+            createMembership(conn, userID, workspaceId);
+            return workspaceId;
+        } catch (SQLException e) {
+            System.err.println("Could not create a new workspace! : " + e.getMessage());
+            return -1;
+        }
+    }
+
+    public void createMembership(Connection conn, int userID, int workspaceID) {
+        String sqlStatement = "INSERT INTO orvik.workspaceMembership (userId, workspaceId) VALUES (?, ?)";
+        try {
+            PreparedStatement stmt = conn.prepareStatement(sqlStatement);
+            stmt.setInt(0, userID);
+            stmt.setInt(1, workspaceID);
+            stmt.executeUpdate();
+            stmt.close();
+        } catch (SQLException e) {
+            System.err.println("Could not create a new workspace membership! : " + e.getMessage());
+            return -1;
+        }
     }
 
     // modify workspace
