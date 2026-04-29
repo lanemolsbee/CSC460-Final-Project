@@ -106,7 +106,32 @@ public class Prog4
 
 
     // Prints all the user functionality options
-    private void printOptions() {}
+    private void printOptions() {
+        System.out.println("");
+        System.out.println("|-----------------------------------------------------------------|");
+        System.out.println("FUNCTIONALITIES:");
+        System.out.println("   USER...");
+        System.out.println("      add user: 'user.add <string NAME> <string EMAIL> <string LANGUAGE> <int TIER>'");
+        System.out.println("      update user information: 'user.update <int USERID> <string name/email/language" +
+                                    " OR int tier> <string NEW NAME/ETC.> <int NEW TIER>'");
+        System.out.println("      delete user: 'user.delete <int USERID>'");
+        System.out.println("   CONVERSATION...");
+        System.out.println("      ");
+        System.out.println("   WORKSPACE...");
+        System.out.println("      ");
+        System.out.println("   PERSONA...");
+        System.out.println("      ");
+        System.out.println("   TEMPLATE...");
+        System.out.println("      ");
+        System.out.println("   SUBSCRIPTION...");
+        System.out.println("      ");
+        System.out.println("   INVOICE...");
+        System.out.println("      ");
+        System.out.println("   TICKET...");
+        System.out.println("      ");
+        System.out.println("|-----------------------------------------------------------------|");
+        System.out.println("");
+    }
 
 
     // Processes query sent by user and sends it on its way to the right method
