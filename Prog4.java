@@ -233,7 +233,7 @@ public class Prog4 {
     // the system must verify that a user belongs to a workspace before they can move a conversation into it
 
     // create workspace
-    public int createWorkspace(Connection conn, int userID String name) {
+    public int createWorkspace(Connection conn, int userID, String name) {
         String sqlStatement = "INSERT INTO orvik.workspace (workspaceId, name) VALUES (workspace_seq.nextval, ?)";
         try {
             String[] generatedCols = {"workspaceId"};
@@ -266,13 +266,25 @@ public class Prog4 {
             stmt.close();
         } catch (SQLException e) {
             System.err.println("Could not create a new workspace membership! : " + e.getMessage());
-            return -1;
+            return;
         }
     }
 
     // modify workspace
-    public boolean modifyWorkspace() {
-        return true;
+    public boolean modifyWorkspace(Connection conn, int workspaceID, String newName) {
+        String sqlStatement = "UPDATE orvik.workspace SET name = ? WHERE workspaceId = ?";
+        try {
+                PreparedStatement stmt = conn.prepareStatement(sqlStatement);
+                stmt.setString(1, newName);
+                stmt.setInt(2, workspaceID);
+                stmt.executeUpdate();
+                stmt.close();
+                return true;
+            } catch (SQLException e) {
+                System.err.println("Could not update name! : " + e.getMessage());
+                return false;
+            }
+        return false;
     }
 
     // functionality #4 - Jordan
