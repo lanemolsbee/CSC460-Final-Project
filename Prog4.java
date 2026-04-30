@@ -7,12 +7,16 @@ public class Prog4
     // CONN + INTERFACE (Annabelle <== comments are for TAs so I'm using this name)
     public static void main(String[] args) {
         // Call connector to connect to DB
-        connector();
+        if (args.length < 2) {
+            System.out.println("Usage: java Prog4 <username> <password>");
+            System.exit(-1);
+        }
+        connector(args[0], args[1]);
     }
 
 
     // Connects to the Database and calls loopMechanism
-    private void connector() {
+    private static void connector(String username, String password) {
         // INITIALIZE (including all DB stuff)
         System.out.println("");
         System.out.println("PLACEHOLDER WELCOME MESSAGE: DATABASE LOADING...");
@@ -21,8 +25,7 @@ public class Prog4
         // change this depending on team verdict of hardcoding this
         final String oracleURL =
             "jdbc:oracle:thin:@aloe.cs.arizona.edu:1521:oracle";
-        // Oracle DBMS username, password
-        String username = "ajonatan", password = "FALSE PASSWORD";
+
 
         // load the (Oracle) JDBC driver by initializing its base
         // class, 'oracle.jdbc.OracleDriver'.
@@ -39,9 +42,12 @@ public class Prog4
         Connection conn = null;
         try {
             conn = DriverManager.getConnection(oracleURL,username,password);
-        } catch (SQLException e) {
+        } 
+        
+        // Oops - password may be incorrect. 
+        catch (SQLException e) {
             System.err.println("*** SQLException:  "
-                + "Could not open JDBC connection.");
+                + "Could not open JDBC connection. Check username/password.");
             System.err.println("\tMessage:   " + e.getMessage());
             System.err.println("\tSQLState:  " + e.getSQLState());
             System.err.println("\tErrorCode: " + e.getErrorCode());
@@ -71,7 +77,7 @@ public class Prog4
 
     // Method that loops for user query accepting
     // Calls printOptions and queryToAction
-    private void loopMechanism(Connection conn) {
+    private static void loopMechanism(Connection conn) {
         // Boolean for loop control
         Boolean loopRun = true;
         // Scanner for user input
@@ -98,12 +104,13 @@ public class Prog4
             System.out.println("");
         }
         System.out.println("");
+        input.close();
         System.out.println("EXIT RECEIEVED; CLOSING CONNECTION...");
     }
 
 
     // Prints all the user functionality options
-    private void printOptions() {
+    private static void printOptions() {
         System.out.println("");
         System.out.println("|-----------------------------------------------------------------|");
         System.out.println("FUNCTIONALITIES:");
@@ -133,7 +140,7 @@ public class Prog4
 
     // Processes query sent by user and sends it on its way to the right method
     // Currently partial duplicate of code from my Prog3; not functional! 
-    private void queryToAction(String query, Connection dbconn)
+    private static void queryToAction(String query, Connection dbconn)
     {
         // Split for processing the query and its parameters
         String[] split = query.split(" ");
@@ -740,7 +747,7 @@ public class Prog4
         // sql statement to get items in workspaceMembership with specific userId and workspaceId
         String belongs = "SELECT COUNT(*) FROM orvik.workspaceMembership WHERE workspaceId = ? AND userId = ?";
         try {
-            PreparedStatement stmt = conn.prepareStatement(sqlTicket);
+            PreparedStatement stmt = conn.prepareStatement(belongs);
             // add specific workspaceId
             stmt.setInt(1, workspaceID);
             // add specific userId
