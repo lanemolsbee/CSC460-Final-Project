@@ -1,8 +1,4 @@
 import java.sql.*;
-//import java.io.*;
-//import java.util.*;
-
-
 import java.time.*;
 
 public class Prog4 {
@@ -280,11 +276,11 @@ public class Prog4 {
                 stmt.executeUpdate();
                 stmt.close();
                 return true;
-            } catch (SQLException e) {
-                System.err.println("Could not update name! : " + e.getMessage());
-                return false;
-            }
-        return false;
+        } catch (SQLException e) {
+            System.err.println("Could not update name! : " + e.getMessage());
+            return false;
+        }
+        //return false;
     }
 
     // functionality #4 - Jordan
