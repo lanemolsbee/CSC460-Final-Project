@@ -617,42 +617,105 @@ public class Prog4
 
 
     // FUNCTIONALITY #7 (Pearl)
-    // generate a new invoice for a user's monthly tier fee
+
+    /*---------------------------------------------------------------
+    |   Method newInvoice(Connection conn, int userID, int amount)
+    |
+    |   Purpose: This method creates a new invoice and adds it to the
+    |            invoice table (if possible). In this process, an
+    |            invoiceId is generated, and this is returned if the 
+    |            process is successful. 
+    |
+    |   Pre-Condition: There exists an invoice table where each row has
+    |                  6 values. They are: invoiceId (generated in this
+    |                  method), userId, amount, date, and status.  
+    |
+    |   Post-Condition: If all works with SQL, a new invoice has been 
+    |                   added to the invoice table with a newly generated, 
+    |                   unique invoiceId. 
+    |
+    |   Parameters: 
+    |       conn -- The Connection to JDBC to connect to SQL.
+    |       userID -- The identifier of the user for which a new
+    |                 invoice needs to be created.
+    |       amount -- The amount for the invoice to be added to the
+    |                 new row in the invoice table.
+    |
+    |   Returns: An integer representing the newly created invoice is
+    |            returned (invoiceId). Also, this new invoice is 
+    |            inserted into the invoice table. 
+    *--------------------------------------------------------------*/
     public int newInvoice(Connection conn, int userID, int amount) {
+        // sql statement to add new invoice to table
         String sqlStatement = "INSERT INTO orvik.invoice (invoiceId, userId, amount, date, status) VALUES (invoice_seq.nextval, ?, ?, ?, ?)";
         try {
             String[] generatedCols = {"invoiceId"};
             PreparedStatement stmt = conn.prepareStatement(sqlStatement, generatedCols);
             int invoiceId = -1;
+            // add parameter userID
             stmt.setInt(1, userID);
+            // add parameter amount
             stmt.setDouble(2, amount);
+            // set date to current timestamp
             stmt.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
+            // set status to unpaid
             stmt.setString(4, "UNPAID");
             stmt.executeUpdate();
             stmt.close();
 
+            // generate invoiceId
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
                 invoiceId = rs.getInt(1);
             }
+            // return newly generated invoiceId
             return invoiceId;
         } catch (SQLException e) {
+            // catch sql exception
             System.err.println("Could not create invoice! : " + e.getMessage());
             return -1;
         }
     }
 
 
-    // mark an existing invoice as "Paid"
+    /*---------------------------------------------------------------
+    |   Method paidBill(Connection conn, int invoiceID)
+    |
+    |   Purpose: This method takes an invoiceID as a parameter and 
+    |            makes the status of this invoice within the table
+    |            "invoice" set to "PAID". If this happens, true is
+    |            returned, otherwise, false is returned.
+    |
+    |   Pre-Condition: There exists an invoice table where each row has
+    |                  6 values, and one of them is status, which either
+    |                  has a value of "PAID" or "UNPAID".
+    |
+    |   Post-Condition: If it exists, the row with the invoiceId
+    |                   identified as a parameter, has its status set
+    |                   to "PAID" within the invoice table.
+    |
+    |   Parameters: 
+    |       conn -- The Connection to JDBC to connect to SQL.
+    |       invoiceID -- The identifier of the invoice at which to 
+    |                    change the status to "PAID"
+    |
+    |   Returns: A boolean which identifies whether the invoice with
+    |            the identifier invoiceID had its status changed to
+    |            "PAID". If this is not able to happen, false is 
+    |            returned by the method.
+    *--------------------------------------------------------------*/ 
     public boolean paidBill(Connection conn, int invoiceID) {
+        // statement to update invoice status to "PAID"
         String sqlStatement = "UPDATE orvik.invoice SET status = ? WHERE invoiceId = ?";
         try {
             PreparedStatement stmt = conn.prepareStatement(sqlStatement);
+            // change to "PAID"
             stmt.setString(1, "PAID");
             stmt.executeUpdate();
             stmt.close();
             return true;
         } catch (SQLException e) {
+            // catches sql exceptions
             System.err.println("Could not update invoice! : " + e.getMessage());
             return false;
         }
