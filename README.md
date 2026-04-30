@@ -1,9 +1,10 @@
 # CSC460-Final-Project
 
-# Compilation and Execution Instructions
+## Compilation and Execution Instructions
+- write compilation and execution instructions here
 
 ## Project Workload Distribution
-<u>Group Members: Lane, Pearl, Annabelle, Jordan</u>
+<ins>Group Members: Lane, Pearl, Annabelle, Jordan</ins>
 - Table Creation + Design -- Lane
 - Logical Database Design -- Lane and Annabelle
 - E-R Diagram -- Pearl and Jordan
@@ -14,6 +15,6 @@
     - Query #1 -- Jordan
     - Query #2 -- Annabelle
     - Query #3 -- Pearl
-    - Query #4 Lane
+    - Query #4 -- Lane
 - Interface -- Annabelle
 - Final Product Document -- Lane and Annabelle
