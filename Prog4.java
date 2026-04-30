@@ -166,140 +166,290 @@ public class Prog4
 
 
     // FUNCTIONALITY #1 (Pearl)
-    // add account
+
+    /*---------------------------------------------------------------
+    |   Method addUser(Connection conn, String name, String email, 
+    |                            String language, int tierID)
+    |
+    |   Purpose: This method creates a new user and inserts it into 
+    |            the Users table. In the process, a unique identifying
+    |            value is generated (userId), added to the table, and
+    |            returned. The parameters are also included in the 
+    |            new row of the table. If there are any sql issues,
+    |            -1 is returned.
+    |
+    |   Pre-Condition: There is a Users table with 6 values: userId
+    |                  (generated in this method), name, email,
+    |                   creationDate (current date/time), language,
+    |                   and tierId.
+    |
+    |   Post-Condition: A new row has been added to the Users table
+    |                   with a unique userId and the parameter values 
+    |                   from this method along with the current
+    |                   date/time. If there are sql issues, they
+    |                   are caught and -1 is returned.
+    |
+    |   Parameters: 
+    |       conn -- The Connection to JDBC to connect to SQL.
+    |       name -- A string representing the name for the new user.
+    |       email -- A string representing the new user's email.
+    |       language -- A string representing the new user's language.
+    |       tierID -- An int of the tierId (representing membership 
+    |                 tier) to add to the new user.
+    |
+    |   Returns: An integer representing the newly created user
+    |            is returned (userId). Also, this new user is 
+    |            inserted into the Users table.
+    *--------------------------------------------------------------*/ 
     public int addUser(Connection conn, String name, String email, String language, int tierID) {
-        String sqlStatement = "INSERT INTO orvik.Users (userId, name, email, creationDate, language, tierId) VALUES (users_seq.nextval, ?, ?, ?, ?, ?)";
+        String sqlStatement = "INSERT INTO orvik.Users (userId, name, email, creationDate, language, tierId) VALUES (Users_seq.nextval, ?, ?, ?, ?, ?)";
         try {
             String[] generatedCols = {"userId"};
             int userId = -1;
             PreparedStatement stmt = conn.prepareStatement(sqlStatement, generatedCols);
+            // name parameter added
             stmt.setString(1, name);
+            // email parameter added
             stmt.setString(2, email);
+            // current date/time added as date
             stmt.setTimestamp(3, new Timestamp(LocalTime.now().toNanoOfDay()));
+            // language parameter added
             stmt.setString(4, language);
+            // membership tierID parameter added
             stmt.setInt(5, tierID);
             stmt.executeUpdate();
             stmt.close();
 
+            // userId generated
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
                 userId = rs.getInt(1);
             }
+            // new userId returned
             return userId;
         } catch (SQLException e) {
+            // catch sql exceptions
             System.err.println("Could not create a new user! : " + e.getMessage());
             return -1;
         }
     }
 
-
-    // use last two for extra values to change
-    // make changeStr NULL if not necessary
-    // make newtier NULL if not necessary
+    /*---------------------------------------------------------------
+    |   Method updateUser(Connection conn, int userID, String toUpdate, 
+    |                     String changeStr, int newTier)
+    |
+    |   Purpose: This method changes a value in a specific row (based on
+    |            userId) of the Users table. The value to change could be
+    |            a user's name, email, language, or membership tier level
+    |            (tierId). The parameter toUpdate will specify this. The 
+    |            last two parameters will specify what the toUpdate value
+    |            should be changed to. If this is done successfully, true
+    |            is returned. Otherwise, false is returned, which is also
+    |            what happens if toUpdate is not valid.
+    |
+    |   Pre-Condition: There exists a Users table with rows containing 6
+    |                  values each. These include name, email, language, 
+    |                  and tierId (membership tier level), etc. These four
+    |                  value can be updated in this method.
+    |
+    |   Post-Condition: A row of the Users table has been updated. The 
+    |                   value for name, email, language, or tierId has 
+    |                   been changed for a specific userId. If that 
+    |                   row does not exist or there is a sql problem,
+    |                   a change does not occur.
+    |
+    |   Parameters: 
+    |       conn -- The Connection to JDBC to connect to SQL.
+    |       userID -- The integer representing a user in the Users
+    |                 table that we want to change a value in. 
+    |       toUpdate -- This represents what value should be changed.
+    |                   It should be either, "name", "email",
+    |                   "language", or "tierId". If the value is 
+    |                   something else, false is returned (invalid).
+    |       changeStr -- This represents either the new name, email,
+    |                    or language of the specified user (by userId)
+    |                    but only if toUpdate was equal to "name",
+    |                    "email", or "language".
+    |       newTier -- This represents the new tier for the specified
+    |                  user (by userId), but only if toUpdate was 
+    |                  equal to "tierId"
+    |
+    |   Returns: A boolean is returned of whether a value was 
+    |            successfully changed within a certain user's (userId)
+    |            row of the Users table. If the toUpdate value is invalid
+    |            or the value cannot be changed, false is returned.
+    *--------------------------------------------------------------*/ 
     public boolean updateUser(Connection conn, int userID, String toUpdate, String changeStr, int newTier) {
-        // update name
+        // if toUpdate is "name"
         if (toUpdate.equals("name")) {
-            String sqlStatement = "UPDATE orvik.invoice SET name = ? WHERE userId = ?";
+            // sql statement to change the name with the specific userId
+            String sqlStatement = "UPDATE orvik.Users SET name = ? WHERE userId = ?";
             try {
                 PreparedStatement stmt = conn.prepareStatement(sqlStatement);
+                // new name
                 stmt.setString(1, changeStr);
+                // specific userId
+                stmt.setString(2, userID);
                 stmt.executeUpdate();
                 stmt.close();
+                // return true if name changed correctly
                 return true;
             } catch (SQLException e) {
+                // catch sql exceptions
                 System.err.println("Could not update name! : " + e.getMessage());
                 return false;
             }
         }
-        // update email
+        // if toUpdate is "email"
         else if (toUpdate.equals("email")) {
-            String sqlStatement = "UPDATE orvik.invoice SET email = ? WHERE userId = ?";
+            // sql statement to change the email with the specific userId
+            String sqlStatement = "UPDATE orvik.Users SET email = ? WHERE userId = ?";
             try {
                 PreparedStatement stmt = conn.prepareStatement(sqlStatement);
+                // add new email
                 stmt.setString(1, changeStr);
+                // specific userId
+                stmt.setString(2, userID);
                 stmt.executeUpdate();
                 stmt.close();
+                // return true if email changed correctly
                 return true;
             } catch (SQLException e) {
+                // catch sql exceptions
                 System.err.println("Could not update email! : " + e.getMessage());
                 return false;
             }
         }
-        // update language
+        // if toUpdate is language
         else if (toUpdate.equals("language")) {
-            String sqlStatement = "UPDATE orvik.invoice SET language = ? WHERE userId = ?";
+            // sql statement to change the language with the specific userId
+            String sqlStatement = "UPDATE orvik.Users SET language = ? WHERE userId = ?";
             try {
                 PreparedStatement stmt = conn.prepareStatement(sqlStatement);
+                // add new language
                 stmt.setString(1, changeStr);
+                // specific userId
+                stmt.setString(2, userID);
                 stmt.executeUpdate();
                 stmt.close();
+                // return true if language is changed correctly
                 return true;
             } catch (SQLException e) {
                 System.err.println("Could not update language! : " + e.getMessage());
                 return false;
             }
         }
-        // update membership tier
+        // if toUpdate is tierId
         else if (toUpdate.equals("tierId")) {
+            // jordan already wrote a method for this!
             return updateSubscription(conn, userID, newTier);
         }
+        // if input of toUpdate was invalid, return false
         return false;
     }
 
 
-    // return false if unable to delete
+    /*---------------------------------------------------------------
+    |   Method deleteUser(Connection conn, int userID)
+    |
+    |   Purpose: This method has the purpose of deleting a specific
+    |            user (identified by userId parameter) from the Users
+    |            table. But first, two conditions must be checked. If
+    |            any unpaid invoices exist for the user, or if there
+    |            are any open support tickets, the user cannot be
+    |            deleted. If a user is successfully deleted, true is 
+    |            returned. Otherwise, false is returned. 
+    |
+    |   Pre-Condition: There exists a Users table where each row
+    |                  is identified (PK) by a unique userId value. This
+    |                  value is used in this method to identify users
+    |                  for deletion. There also exists an invoice table
+    |                  and a supportTicket table that include userId
+    |                  as a field in each. 
+    |
+    |   Post-Condition: The user (identified by userId) has been removed 
+    |                   from the Users table but only if the two 
+    |                   conditions (listed in purpose) have been met. If 
+    |                   the user does not meet the conditions, or does not
+    |                   exist, the table remains unchanged.
+    |
+    |   Parameters: 
+    |       conn -- The Connection to JDBC to connect to SQL.
+    |       userID -- The integer representing a user in the Users
+    |                 table that we want to delete.
+    |
+    |   Returns: A boolean is returned representing whether a user was
+    |            removed from the Users table. If a user meets both 
+    |            conditions and has been removed, true is returned. 
+    |            Otherwise, false is returned.
+    *--------------------------------------------------------------*/
     public boolean deleteUser(Connection conn, int userID) {
 
-        // must check invoice table
-        // if any unpaid --> return false
+        // First condition! User cannot have any unpaid invoices
+        // create sql statement to get number of unpaid invoices for the user
         String sqlInvoice = "SELECT COUNT(*) FROM orvik.invoice WHERE userId = ? AND status = ?";
 
         try {
             PreparedStatement stmt = conn.prepareStatement(sqlInvoice);
-            stmt.setInt(1, userID);;
+            // specific user
+            stmt.setInt(1, userID);
+            // but only unpaid invoices
             stmt.setString(2, "UNPAID");
             ResultSet rs = stmt.executeQuery();
+            // if the value is more than 0, we can't delete the user
             if (rs.next() && rs.getInt(1) > 0) {
-                System.err.format("Cannot delete user %d, it has unpaid invoices.\n",
-                        userID);
+                // has unpaid invoices!
+                System.err.format("Cannot delete user %d, it has unpaid invoices.\n", userID);
                 stmt.close();
                 rs.close();
+                // return false because there were unpaid invoices
                 return false;
             }
         } catch (SQLException e) {
+            // catch sql exceptions
             System.err.println("Could not read from the table: " + e.getMessage());
             return false;
         }
 
-        // must check support ticket table
-        // if any open with user id --> return false
+        // Second condition! User cannot have any open support tickets
+        // create sql statement to get number of open support tickets for the user
         String sqlTicket = "SELECT COUNT(*) FROM orvik.supportTicket WHERE userId = ? AND outcome = ?";
 
         try {
             PreparedStatement stmt = conn.prepareStatement(sqlTicket);
+            // specific user
             stmt.setInt(1, userID);
+            // but only open support tickets
             stmt.setString(2, "OPEN");
             ResultSet rs = stmt.executeQuery();
             if (rs.next() && rs.getInt(1) > 0) {
+                // has open support tickets!
                 System.err.format("Cannot delete user %d, it has open support tickets.\n",
                         userID);
                 stmt.close();
                 rs.close();
+                // return false because there were open support tickets
                 return false;
             }
         } catch (SQLException e) {
+            // catch sql exceptions
             System.err.println("Could not read from the table: " + e.getMessage());
             return false;
         }
 
+        // now we've passed both conditions
+        // sql statement to delete the specific user by userId
         String sqlStatement = "DELETE FROM orvik.Users WHERE userId = ?";
         try {
             PreparedStatement stmt = conn.prepareStatement(sqlStatement);
+            // specific user 
             stmt.setInt(1, userID);
             stmt.executeUpdate();
             stmt.close();
+            // we've deleted the user, so return true
             return true;
         } catch (SQLException e) {
+            // catch sql exceptions
             System.err.println("Could not write to the table: " + e.getMessage());
             return false;
         }
