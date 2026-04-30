@@ -1,5 +1,6 @@
 import java.sql.*;
 import java.time.*;
+import java.util.*;
 
 public class Prog4
 {
@@ -510,64 +511,155 @@ public class Prog4
 
 
     // FUNCTIONALITY #5 (Pearl)
-    // add prompt template
+    
+    /*---------------------------------------------------------------
+    |   Method addPromptTemplate(Connection conn, String title, 
+    |                            String content, int userID,
+    |                            int workspaceID)
+    |
+    |   Purpose: This method creates a new promptTemplate and adds it
+    |            as a new row to the promptTemplate table. In the process
+    |            a unique value is generated to represent the
+    |            promptTemplate (templateId) and this is returned.
+    |
+    |   Pre-Condition: There exists a promptTemplate table where each
+    |                  row has 6 values: templateId (PK), title, content
+    |                  userId, workspaceId.
+    |
+    |   Post-Condition: A new row has been added to the promptTemplate
+    |                   table, with a newly generated identifier 
+    |                   (templateId). The parameter values have been
+    |                   inserted along with the generated id and the
+    |                   current date/time. If there were sql issues,
+    |                   -1 has been returned.
+    |
+    |   Parameters: 
+    |       conn -- The Connection to JDBC to connect to SQL.
+    |       title -- A string representing the title of the newly
+    |                created prompt template.
+    |       content -- A string representing the contents of the newly
+    |                  created prompt template.
+    |       userID -- An int of the userId to assign this prompt
+    |                 template to.
+    |       workspaceID -- An int of the workspaceID to assign this
+    |                      prompt template to.
+    |
+    |   Returns: An integer representing the newly created prompt template
+    |            is returned (templateId). Also, this new template is 
+    |            inserted into the template table.
+    *--------------------------------------------------------------*/ 
     public int addPromptTemplate(Connection conn, String title, String content, int userID, int workspaceID) {
-        String sqlStatement = "INSERT INTO orvik.promptTemplace (templateId, title, content, userId, workspaceId) VALUES (promptTemplace_seq.nextval, ?, ?, ?, ?)";
+        String sqlStatement = "INSERT INTO orvik.promptTemplate (templateId, title, content, userId, workspaceId) VALUES (promptTemplate_seq.nextval, ?, ?, ?, ?)";
         try {
             String[] generatedCols = {"templateId"};
             PreparedStatement stmt = conn.prepareStatement(sqlStatement, generatedCols);
             int templateId = -1;
+            // add title parameter
             stmt.setString(1, title);
+            // add content parameter
             stmt.setString(2, content);
+            // add userID parameter
             stmt.setInt(3, userID);
+            // add workspaceID parameter
             stmt.setInt(4, workspaceID);
             stmt.executeUpdate();
             stmt.close();
 
+            // generate templateId
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
                 templateId = rs.getInt(1);
             }
+            // return the generated templateId
             return templateId;
         } catch (SQLException e) {
+            // catch sql exception
             System.err.println("Could not create prompt template! : " + e.getMessage());
             return -1;
         }
     }
 
 
-    // update prompt template
-    // last value new string value
-    public boolean updatePromptTemplate(Connection conn, int userID, int workplaceID, int templateID, String toUpdate, String changeStr) {
-        // need to check what should be updated
+    /*---------------------------------------------------------------
+    |   Method updatePromptTemplate(Connection conn, int templateID,
+    |                              String toUpdate, String changeStr)
+    |
+    |   Purpose: This method updates a value in the promptTemplate 
+    |            table if its templateId matches that of the parameter.
+    |            From there, the toUpdate parameter decides what value
+    |            is being updated: the title or the content of the 
+    |            prompt template. If it's neither of these, the input is
+    |            invalid and false is returned. The last parameter 
+    |            is what the new value should be. If all of this is done
+    |            successfully, then true is returned. Otherwise, false
+    |            is returned.
+    |
+    |   Pre-Condition: A promptTemplate table exists, and for each row
+    |                  there are 5 values. Two of these are the title
+    |                  and content of each promptTemplate.
+    |
+    |   Post-Condition: A row of the promptTemplate table has been
+    |                   adjusted based on the parameters. Either the
+    |                   content or title has been changed. If the specific
+    |                   row does not exist, false has been returned.
+    |
+    |   Parameters: 
+    |       conn -- The Connection to JDBC to connect to SQL.
+    |       templateID -- The identifier (PK) for which template
+    |                     that we want to update in some way.
+    |       toUpdate -- This is a string that will either be "title",
+    |                   "content", or something invalid. This identifies
+    |                   which value we want to change.
+    |       changeStr -- This string identifies what we want to change the
+    |                    above identified value to. So, what the new title
+    |                    or content will be.
+    |
+    |   Returns: This returns true if the table was successfully updated
+    |            and false otherwise. If the toUpdate string is not
+    |            "title" or "content", then false is automatically returned.
+    *--------------------------------------------------------------*/ 
+    public boolean updatePromptTemplate(Connection conn, int templateID, String toUpdate, String changeStr) {
+        // if we want to update the prompt template title
         if (toUpdate.equals("title")) {
+            // sql statement for changing the title
             String sqlStatement = "UPDATE orvik.promptTemplate SET title = ? WHERE templateId = ?";
             try {
                 PreparedStatement stmt = conn.prepareStatement(sqlStatement);
+                // what we are changing it to
                 stmt.setString(1, changeStr);
+                // primary key
                 stmt.setInt(2, templateID);
                 stmt.executeUpdate();
                 stmt.close();
+                // return true, title successfully changed
                 return true;
             } catch (SQLException e) {
+                // catch sql exceptions
                 System.err.println("Could not update prompt template title! : " + e.getMessage());
                 return false;
             }
         }
+        // if we want to update the prompt template content
         else if (toUpdate.equals("content")) {
+            // sql statement for changing the content
             String sqlStatement = "UPDATE orvik.promptTemplate SET content = ? WHERE templateId = ?";
             try {
                 PreparedStatement stmt = conn.prepareStatement(sqlStatement);
+                // what we're changing it to 
                 stmt.setString(1, changeStr);
+                // primary key
                 stmt.setInt(2, templateID);
                 stmt.executeUpdate();
                 stmt.close();
+                // return true, content successfully changed
                 return true;
             } catch (SQLException e) {
+                // catch sql exceptions
                 System.err.println("Could not update prompt template content! : " + e.getMessage());
                 return false;
             }
         }
+        // return false if invalid toUpdate value
         return false;
     }
 
