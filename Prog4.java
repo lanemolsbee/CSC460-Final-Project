@@ -541,41 +541,108 @@ public class Prog4
 
 
     // FUNCTIONALITY #3 (Pearl)
-    // the system must verify that a user belongs to a workspace before they can move a conversation into it
-    // create workspace
+
+    /*---------------------------------------------------------------
+    |   Method createWorkspace(Connection conn, int userID, String name)
+    |
+    |   Purpose: This method creates a new workspace. A workspace only 
+    |            contains a generated workspaceId and the name of the 
+    |            workspace. Within this method is a call to a method,
+    |            createMembership(), which creates a connection between
+    |            the workspace and a specific user (parameter userID).
+    |            This method returns the unique identifier for the new
+    |            workspace (workspaceId). Or, -1 is returned if there
+    |            are any sql issues.
+    |
+    |   Pre-Condition: There exists a workspace table each with a unique,
+    |                  generated workspaceId (identifier) and a name. There
+    |                  also exists a workspaceMembership table which
+    |                  connects workspaces to users.
+    |
+    |   Post-Condition: A new workspace has been created and connected to a
+    |                   user using workspaceMembership. In this process
+    |                   a new unique workspaceId has been created. 
+    |                   If there were sql issues, this was not done.
+    |
+    |   Parameters: 
+    |       conn -- The Connection to JDBC to connect to SQL.
+    |       userID -- Represents a user to connect the workspace to
+    |                 using a workspaceMembership connection.
+    |       name -- A string representing the name for the workspace.
+    |
+    |   Returns: An integer representing the newly created workspace
+    |            is returned (workspaceId). Also, this workspace is 
+    |            inserted into the workspace table.
+    *--------------------------------------------------------------*/ 
     public int createWorkspace(Connection conn, int userID, String name) {
+        // sql statement for creating a new workspace
         String sqlStatement = "INSERT INTO orvik.workspace (workspaceId, name) VALUES (workspace_seq.nextval, ?)";
         try {
             String[] generatedCols = {"workspaceId"};
+            // create workspaceId
             int workspaceId = -1;
             PreparedStatement stmt = conn.prepareStatement(sqlStatement, generatedCols);
+            // add in the name
             stmt.setString(1, name);
             stmt.executeUpdate();
             stmt.close();
-
+            // generate the workspaceId value
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
                 workspaceId = rs.getInt(1);
             }
-
+            // call the method to create the connection to user
             createMembership(conn, userID, workspaceId);
+            // return the uniquely generated workspaceId
             return workspaceId;
         } catch (SQLException e) {
+            // catch sql exceptions
             System.err.println("Could not create a new workspace! : " + e.getMessage());
             return -1;
         }
     }
 
-
+    /*---------------------------------------------------------------
+    |   Method createMembership(Connection conn, int userID, 
+    |                          int workspaceID)
+    |
+    |   Purpose: This method connects a workspace to a user. This is done
+    |            by adding a row to the workspaceMembership table which
+    |            has the sole purpose of connecting workspaces and users.
+    |            This method does not return anything. 
+    |
+    |   Pre-Condition: There exists a workspace table each with a unique,
+    |                  generated workspaceId (identifier) and a name. There
+    |                  also exists a workspaceMembership table which
+    |                  connects workspaces to users.
+    |
+    |   Post-Condition: There is now a connection between the given user
+    |                   and workspace (parameters). If there were sql
+    |                   issues, this connection was not made.
+    |
+    |   Parameters: 
+    |       conn -- The Connection to JDBC to connect to SQL.
+    |       userID -- Represents a user to connect the workspace to
+    |                 using a workspaceMembership connection.
+    |       workspaceID -- Represents a unique workspace to connect
+    |                      to a user.
+    |
+    |   Returns: None.
+    *--------------------------------------------------------------*/ 
     public void createMembership(Connection conn, int userID, int workspaceID) {
+        // sql statement to create a new workspace membership
+        // this is a connection between user and workspace
         String sqlStatement = "INSERT INTO orvik.workspaceMembership (userId, workspaceId) VALUES (?, ?)";
         try {
             PreparedStatement stmt = conn.prepareStatement(sqlStatement);
-            stmt.setInt(0, userID);
-            stmt.setInt(1, workspaceID);
+            // add in the user
+            stmt.setInt(1, userID);
+            // add in the worspace
+            stmt.setInt(2, workspaceID);
             stmt.executeUpdate();
             stmt.close();
         } catch (SQLException e) {
+            // catch sql exceptions
             System.err.println("Could not create a new workspace membership! : " + e.getMessage());
             return;
         }
