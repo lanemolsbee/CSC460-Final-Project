@@ -289,7 +289,7 @@ public class Prog4
                 // new name
                 stmt.setString(1, changeStr);
                 // specific userId
-                stmt.setString(2, userID);
+                stmt.setInt(2, userID);
                 stmt.executeUpdate();
                 stmt.close();
                 // return true if name changed correctly
@@ -309,7 +309,7 @@ public class Prog4
                 // add new email
                 stmt.setString(1, changeStr);
                 // specific userId
-                stmt.setString(2, userID);
+                stmt.setInt(2, userID);
                 stmt.executeUpdate();
                 stmt.close();
                 // return true if email changed correctly
@@ -329,7 +329,7 @@ public class Prog4
                 // add new language
                 stmt.setString(1, changeStr);
                 // specific userId
-                stmt.setString(2, userID);
+                stmt.setInt(2, userID);
                 stmt.executeUpdate();
                 stmt.close();
                 // return true if language is changed correctly
@@ -648,24 +648,123 @@ public class Prog4
         }
     }
 
-
-    // modify workspace
-    public boolean modifyWorkspace(Connection conn, int workspaceID, String newName) {
+    /*---------------------------------------------------------------
+    |   Method changeWorkspaceName(Connection conn, int workspaceID, 
+    |                              String newName)
+    |
+    |   Purpose: This method allows for the changing of the name of a
+    |            specific workspace identified by its workspaceId. The 
+    |            name is changed into another paramter, newName. If this
+    |            is done successfully, the method returns true. Otherwise,
+    |            if there are sql issues, false is returned.
+    |
+    |   Pre-Condition: There exists a workspace table each with a unique,
+    |                  generated workspaceId (identifier) and a name. There
+    |                  also exists a workspaceMembership table which
+    |                  connects workspaces to users.
+    |
+    |   Post-Condition: The name of a specific workspace (identified
+    |                   by workspaceId) has been changed to a new value
+    |                   (given by paramter newName). If there were sql
+    |                   issues, this was not done.
+    |
+    |   Parameters: 
+    |       conn -- The Connection to JDBC to connect to SQL.
+    |       workspaceID -- Represents a unique workspace to have its name
+    |                      changed to the newName value.
+    |       newName -- A string representing the new name for the workspace.
+    |
+    |   Returns: This method returns true if the name of the workspace
+    |            was successfully changed to the parameter newName. If there
+    |            were any issues in sql, false is returned.
+    *--------------------------------------------------------------*/ 
+    public boolean changeWorkspaceName(Connection conn, int workspaceID, String newName) {
+        // sql statement to change workspace name
         String sqlStatement = "UPDATE orvik.workspace SET name = ? WHERE workspaceId = ?";
         try {
                 PreparedStatement stmt = conn.prepareStatement(sqlStatement);
+                // add new (parameter) name
                 stmt.setString(1, newName);
+                // only for specific workspaceId
                 stmt.setInt(2, workspaceID);
                 stmt.executeUpdate();
                 stmt.close();
+                // name has been changed, return true
                 return true;
         } catch (SQLException e) {
+            // catch sql exceptions
             System.err.println("Could not update name! : " + e.getMessage());
             return false;
         }
-        //return false;
     }
 
+    /*---------------------------------------------------------------
+    |   Method addWorkspaceConvo(Connection conn, int userID, 
+    |                            int personaID, int workspaceID, 
+    |                            String title)
+    |
+    |   Purpose: This method adds a conversation to a workspace. In
+    |            order for this to happen, a condition must first be met.
+    |            The given user (for the conversation) must "own" the
+    |            workspace. This can be checked in the workspaceMembership
+    |            table. After this, the newConvo() method can be called
+    |            to create a conversation and add it to the conversation
+    |            table. This method also generates a unique conversationId
+    |            which is returned by this method. If the condition is not
+    |            met, or there is a sql issue, -1 is returned.
+    |
+    |   Pre-Condition: There exists workspace, workspaceMembership, 
+    |                  conversation, and Users tables. All 4 of these
+    |                  tables will be used within this method. 
+    |
+    |   Post-Condition: A new conversation has been created and added
+    |                   to the conversation table. The new row has been
+    |                   given a generated conversationId and that has been
+    |                   returned by this method.
+    |
+    |   Parameters: 
+    |       conn -- The Connection to JDBC to connect to SQL.
+    |       userID -- The user to connect to the workspace in the conversation
+    |                 and the user to check for with workspace ownership.
+    |       personaID -- The persona inside of the conversation - used by 
+    |                    the newConvo() method.
+    |       workspaceID -- Represents a unique workspace to add a conversation
+    |                      to, and to check its ownership by userid.
+    |       String title -- The title of the new conversation.
+    |
+    |   Returns: An integer representing the newly created workspace 
+    |            conversation is returned (conversationId). Also, this 
+    |            conversation is inserted into the convo table.
+    *--------------------------------------------------------------*/ 
+    public int addWorkspaceConvo(Connection conn, int userID, int personaID, int workspaceID, String title) {
+        // sql statement to get items in workspaceMembership with specific userId and workspaceId
+        String belongs = "SELECT COUNT(*) FROM orvik.workspaceMembership WHERE workspaceId = ? AND userId = ?";
+        try {
+            PreparedStatement stmt = conn.prepareStatement(sqlTicket);
+            // add specific workspaceId
+            stmt.setInt(1, workspaceID);
+            // add specific userId
+            stmt.setInt(2, userID);
+            ResultSet rs = stmt.executeQuery();
+            // need to check if it exists in the table
+            // need to know if the user owns that workspace
+            if (rs.next() && rs.getInt(1) > 0) {
+                // create new conversation
+                // using jordan's method
+                int convoID = newConvo(conn, userID, personaID, workspaceID, title);
+                stmt.close();
+                rs.close();
+                // return the new conversation id
+                return convoID;
+            }
+            // if it doesn't exist, return -1
+            return -1;
+        } catch (SQLException e) {
+            // catch sql exceptions
+            System.err.println("Could not read from the table: " + e.getMessage());
+            return -1;
+        }
+    }
 
     // FUNCTIONALITY #4 (Jordan)
     public int createPersona(Connection conn, String name, String directive) {
