@@ -271,7 +271,7 @@ public class Prog4
             // email parameter added
             stmt.setString(2, email);
             // current date/time added as date
-            stmt.setTimestamp(3, new Timestamp(LocalTime.now().toNanoOfDay()));
+            stmt.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
             // language parameter added
             stmt.setString(4, language);
             // membership tierID parameter added
@@ -1112,9 +1112,9 @@ public class Prog4
     |            returned (invoiceId). Also, this new invoice is 
     |            inserted into the invoice table. 
     *--------------------------------------------------------------*/
-    public int newInvoice(Connection conn, int userID, int amount) {
+    public int newInvoice(Connection conn, int userID, double amount) {
         // sql statement to add new invoice to table
-        String sqlStatement = "INSERT INTO orvik.invoice (invoiceId, userId, amount, date, status) VALUES (invoice_seq.nextval, ?, ?, ?, ?)";
+        String sqlStatement = "INSERT INTO orvik.invoice (invoiceId, userId, amount, invoiceDate, status) VALUES (invoice_seq.nextval, ?, ?, ?, ?)";
         try {
             String[] generatedCols = {"invoiceId"};
             PreparedStatement stmt = conn.prepareStatement(sqlStatement, generatedCols);
@@ -1178,6 +1178,7 @@ public class Prog4
             PreparedStatement stmt = conn.prepareStatement(sqlStatement);
             // change to "PAID"
             stmt.setString(1, "PAID");
+            stmt.setInt(2, invoiceID);
             stmt.executeUpdate();
             stmt.close();
             return true;
