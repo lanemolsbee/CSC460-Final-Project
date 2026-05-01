@@ -171,6 +171,58 @@ public class Prog4
         System.out.println("ERROR: INCORRECT SYNTAX OR QUERY.");
     }
 
+    /*---------------------------------------------------------------
+    |   Method query4(int userId, Connection con)
+    |
+    |   Purpose: This method returns the top 5 conversations with the highest average
+    |            rating for a specific user (identified by userId). The title and average rating
+    |            for each of the top 5 conversations is printed. If there are sql issues, they
+    |            are caught and an error message is displayed.
+    |
+    |   Pre-Condition: There is a Users table with value userId, 
+    |                  a conversation table with values conversationId, userId, and title,
+    |                  a message table with values messageId and conversationId, and a feedback
+    |                  table with values messageId and rating. The userId value is used to identify
+    |                  the user for which we want to find the top 5 conversations. The conversationId
+    |                  value is used to connect the conversation table to the message table, and the
+    |                  messageId value is used to connect the message table to the feedback table.
+    |
+    |   Post-Condition: None
+    |
+    |   Parameters: 
+    |       con -- The Connection to JDBC to connect to SQL.
+    |       userId -- the integer representing the user in the DBMS
+
+    |   Returns: void
+    |   
+    |   Author: Lane Molsbee
+    |   Extra background: I have typically used a PreparedStatement in previous code I've written,
+                          particularly for CSC 436, so I defaulted to using that here. 
+    *--------------------------------------------------------------*/ 
+    public static void query4(int userId, Connection con){
+        try {
+            String query  = " SELECT c.title, AVG(f.rating) AS avg_rating " +
+            "FROM orvik.conversation c " +
+            "JOIN orvik.message m ON c.conversationId = m.conversationId " +
+            "JOIN orvik.feedback f ON m.messageId = f.messageId " +
+            "WHERE c.userId = :? " +
+            "GROUP BY c.conversationId, c.itle " +
+            "ORDER BY avg_rating DESC " +
+            "FETCH FIRST 5 ROWS ONLY";
+            PreparedStatement stmt = con.prepareStatement(query);
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()){
+                String title = rs.getString("title");
+                double avgRating = rs.getDouble("avg_rating");
+                System.out.print("Conversation Title: " + title + " ");
+                System.out.println("Average rating: " + avgRating);
+            }
+        } catch (Exception e) {
+            System.err.println("Error executing query: " + e.getMessage());
+        }
+    }
+
 
     // FUNCTIONALITY #1 (Pearl)
 
