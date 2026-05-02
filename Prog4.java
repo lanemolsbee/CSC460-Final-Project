@@ -174,12 +174,14 @@ public class Prog4 {
         System.out.println("      'query4 <int USERID>'");
         System.out.println("~ ~ ~");
         System.out.println("");
+        System.out.println("EXAMPLE: 'query4 3'");
+        System.out.println("");
     }
 
 
     // Processes query sent by user and sends it on its way to the right method
     // Currently partial duplicate of code from my Prog3; not functional!
-    private static void queryToAction(String query, Connection dbconn) {
+    private static void queryToAction(String query, Connection conn) {
         // Split for processing the query and its parameters
         String[] split = query.split(" ");
 
@@ -187,10 +189,28 @@ public class Prog4 {
         //       IF ADDMESSSAGE CALL WITHINLIMIT
 
         // Check to see which query/functionality to run
-        if ((query.charAt(0) == '1') && (split.length == 1)) {
-            
+        // QUERIES
+        if ((split[0].contentEquals("query1")) && (split.length == 2)) {
+            if (isViable(split[1], "int")) {
+                query1(Integer.parseInt(split[1]), conn);
+                return;
+            }
+        } else if ((split[0].contentEquals("query2")) && (split.length == 1)) {
+            query2(Integer.parseInt(split[1]), conn);
             return;
-        } 
+        } else if ((split[0].contentEquals("query3")) && (split.length == 1)) {
+            query3(Integer.parseInt(split[1]), conn);
+            return;
+        } else if ((split[0].contentEquals("query4")) && (split.length == 2)) {
+            if (isViable(split[1], "int")) {
+                query4(Integer.parseInt(split[1]), conn);
+                return;
+            }
+        }
+        // FUNCTIONALITIES
+        else if () {
+            
+        }
         // If it matches none of them, print an error and move on
         System.out.println("ERROR: INCORRECT SYNTAX OR QUERY.");
     }
@@ -1614,6 +1634,48 @@ public class Prog4 {
         } catch (SQLException e) {
             System.err.println("Could not close ticket! : " + e.getMessage());
             return false;
+        }
+    }
+
+
+    /*
+    | isViable (num)
+    |
+    | PURPOSE: To confirm that the user-specified number input in loopMechanism
+    |   is a valid integer or double.
+    |
+    | PRE/POST COND: 
+    |    PRE: N/A.
+    |   POST: N/A.
+    |
+    | RETURN: true if the String is an int/double, false otherwise. 
+    |
+    | PARAMs: num (a string representation of the user-specified number).
+    */
+    private boolean isViable(String num, String doubOrInt)
+    {
+        if (doubOrInt.contentEquals("double")) {
+            // Try-catch convert the String num to an int
+            try
+            {
+                Integer.parseInt(num);
+            }
+            catch (NumberFormatException e)
+            {
+                return false;
+            }
+            return true;
+        } else {
+            // Try-catch convert the String num to an int
+            try
+            {
+                Double.parseDouble(num);
+            }
+            catch (NumberFormatException e)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }
