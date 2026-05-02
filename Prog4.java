@@ -261,7 +261,7 @@ public class Prog4 {
                 // get percentage
                 double percentage = rs.getDouble("thumbsUpPercent");
                 // print out the name
-                System.out.print("Persona Name: " + name + " ");
+                System.out.print("Persona Name: " + name + "\n");
                 // print out their percentage
                 System.out.println("Thumb's Up Percentage: " + percentage + "%");
             }
