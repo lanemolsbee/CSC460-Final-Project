@@ -13,7 +13,7 @@ public class Prog4 {
         connector(args[0], args[1]);
     }
 
-    // Connects to the Database and calls loopMechanism
+ 
     /*-------------------------------------------------------------------------
     |   Method connector(String username, String password)
     |
@@ -172,8 +172,7 @@ public class Prog4 {
             System.out.println("FUNCTIONALITIES 1:");
             System.out.println("   USER...");
             System.out.println("      create user: 'user.create <string NAME> <string EMAIL> <string LANGUAGE> <int TIER>'");
-            System.out.println("      change user information: 'user.change <int USERID> <'name'/'email'/'language'/'tierId'>");
-            System.out.println("         <string NEW VALUE> <int NEW TIER>'")
+            System.out.println("      change user information: 'user.change <int USERID> <'name'/'email'/'language'/'tierId'> <string NEW VALUE> <int NEW TIER>'")
             System.out.println("      delete user: 'user.delete <int USERID>'");
             System.out.println("   CONVERSATION...");
             System.out.println("      create convo: 'convo.create <int USERID> <int PERSONAID> <int WORKSPACEID> <string TITLE>'");
@@ -270,17 +269,22 @@ public class Prog4 {
     |   Returns: void
     |
     |   Author: Annabelle Jonatan
+    |   Extra background: I'm sorry this looks so spaghetti at first glance.
     *------------------------------------------------------------------------*/
-    private static void queryToAction(String query, Connection conn) {
+    private static void queryToAction(String query, Connection conn) 
+    {
+        // Temporary variables for storing query results
+        int iRes = 0;
+        boolean bRes = true;
         // Split for processing the query and its parameters
         String[] split = query.split(" ");
 
-        // !!!!! IF DELETEUSER, CALL DELETEUSERMESSAGES!
-        //       IF ADDMESSSAGE CALL WITHINLIMIT
-
         // Check to see which query/functionality to run
+        // Also, check to make sure enough args are supplied for each!
+
         // QUERIES
         if ((split[0].contentEquals("query1")) && (split.length == 2)) {
+            // Checks if user supplied num is a valid int
             if (isViable(split[1], "int")) {
                 query1(Integer.parseInt(split[1]), conn);
                 return;
@@ -298,9 +302,28 @@ public class Prog4 {
             }
         }
         // FUNCTIONALITIES
-        else if () {
-
-        }
+        else if ((split[0].contentEquals("user.create")) && (split.length == 4)) {
+            if (isViable(split[4], "int")) {
+                iRes = addUser(conn, split[1], split[2], split[3], Integer.parseInt(split[4]));
+                if (iRes != -1)
+                    System.out.println("USER ADDED HAS USERID: " + iRes);
+                return;
+            }
+        } else if ((split[0].contentEquals("user.change")) && (split.length == 4)) {
+            if ((isViable(split[1], "int")) && (isViable(split[4], "int"))) {
+                if (updateUser(conn, Integer.parseInt(split[1]), split[2], split[3], Integer.parseInt(split[4])))
+                    System.out.println("USER HAS BEEN UPDATED");
+                return;
+            }
+        } else if ((split[0].contentEquals("user.delete")) && (split.length == 1)) {
+            if (isViable(split[1], "int")) {
+                if (deleteUserMessages(Integer.parseInt(split[1]))) {
+                    if (deleteUser(Integer.parseInt(split[1])))
+                        System.out.println("USER HAS BEEN DELETED");
+                }
+                return;
+            }
+        } 
         // If it matches none of them, print an error and move on
         System.out.println("ERROR: INCORRECT SYNTAX OR QUERY.");
     }
@@ -702,6 +725,7 @@ public class Prog4 {
             return updateSubscription(conn, userID, newTier);
         }
         // if input of toUpdate was invalid, return false
+        System.err.println("Could not update!: Invalid option");
         return false;
     }
 
