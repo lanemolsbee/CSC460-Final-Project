@@ -14,7 +14,26 @@ public class Prog4 {
     }
 
     // Connects to the Database and calls loopMechanism
-    // JDBC LOGIN HANDLING (Jordan, thank you Jordan!)
+    /*-------------------------------------------------------------------------
+    |   Method connector(String username, String password)
+    |
+    |   Purpose: To connect to Oracle via JDBC, run loopMechanism, and then
+    |            close the JDBC connection when the loop ends.
+    |
+    |
+    |   Pre-Condition: N/A
+    |
+    |   Post-Condition: That Oracle has been connected to and, when the
+    |                   function is complete, the connection is closed.
+    |
+    |
+    |   Params: username and password (username and password for an Oracle
+    |           account).
+    |
+    |   Returns: void
+    |
+    |   Author: Jordan Orvik, Annabelle Jonatan
+    *------------------------------------------------------------------------*/
     private static void connector(String username, String password) {
         // INITIALIZE (including all DB stuff)
         System.out.println("");
@@ -71,8 +90,28 @@ public class Prog4 {
         System.out.println("");
     }
 
-    // Method that loops for user query accepting
-    // Calls printOptions and queryToAction
+
+
+    /*-------------------------------------------------------------------------
+    |   Method loopMechanism(Connection conn)
+    |
+    |   Purpose: Loops to accept user queries, calling printOptions to print
+    |            options as requested, queryToAction to run those queries, or
+    |            closing the program if 'exit' is supplied.
+    |
+    |
+    |   Pre-Condition: conn contains a viable Database connection.
+    |
+    |   Post-Condition: That the correct functionality or query has been run
+    |                   and the results printed.
+    |
+    |
+    |   Params: conn (the DB connection).
+    |
+    |   Returns: void
+    |
+    |   Author: Annabelle Jonatan
+    *------------------------------------------------------------------------*/
     private static void loopMechanism(Connection conn) {
         // Boolean for loop control
         Boolean loopRun = true;
@@ -107,8 +146,25 @@ public class Prog4 {
         input.close();
         System.out.println("EXIT RECEIEVED; CLOSING CONNECTION...");
     }
+ 
 
-    // Prints all the user functionality options
+    /*-------------------------------------------------------------------------
+    |   Method printFunctionalities(int page)
+    |
+    |   Purpose: Prints all the user functionality options.
+    |
+    |
+    |   Pre-Condition: None
+    |
+    |   Post-Condition: The functionality options have been printed.
+    |
+    |
+    |   Params: page (either page 1 or 2 of the functionality options).
+    |
+    |   Returns: void
+    |
+    |   Author: Annabelle Jonatan
+    *------------------------------------------------------------------------*/
     private static void printFunctionalities(int page) {
         if (page == 1) {
             System.out.println("");
@@ -156,6 +212,23 @@ public class Prog4 {
     }
 
 
+    /*-------------------------------------------------------------------------
+    |   Method printQueries()
+    |
+    |   Purpose: Prints all 4 query options.
+    |
+    |
+    |   Pre-Condition: None
+    |
+    |   Post-Condition: The query options have been printed.
+    |
+    |
+    |   Params: None
+    |
+    |   Returns: void
+    |
+    |   Author: Annabelle Jonatan
+    *------------------------------------------------------------------------*/
     private static void printQueries() {
         System.out.println("");
         System.out.println("~ ~ ~");
@@ -179,8 +252,25 @@ public class Prog4 {
     }
 
 
-    // Processes query sent by user and sends it on its way to the right method
-    // Currently partial duplicate of code from my Prog3; not functional!
+    /*-------------------------------------------------------------------------
+    |   Method queryToAction(String query, Connection conn)
+    |
+    |   Purpose: Processes strings sent by user and sends them on their way to
+    |            the right method.
+    |
+    |
+    |   Pre-Condition: conn contains a viable Database connection.
+    |
+    |   Post-Condition: That the correct functionality or query has been run
+    |                   and the results printed.
+    |
+    |
+    |   Params: query (the user input), conn (the DB connection).
+    |
+    |   Returns: void
+    |
+    |   Author: Annabelle Jonatan
+    *------------------------------------------------------------------------*/
     private static void queryToAction(String query, Connection conn) {
         // Split for processing the query and its parameters
         String[] split = query.split(" ");
@@ -209,22 +299,26 @@ public class Prog4 {
         }
         // FUNCTIONALITIES
         else if () {
-            
+
         }
         // If it matches none of them, print an error and move on
         System.out.println("ERROR: INCORRECT SYNTAX OR QUERY.");
     }
 
-    /*---------------------------------------------------------------
+
+    /*-------------------------------------------------------------------------
     |   Method query1(int userId, Connection con)
     |
-    |   Purpose: This method takes in a given userID and returns all of the bookmarked messages across all of their conversations.
-    |            Information to be returned will include the messageID, the conversationID, and the timestamp of the message. 
+    |   Purpose: This method takes in a given userID and returns all of the 
+    |            bookmarked messages across all of their conversations.
+    |            Information to be returned will include the messageID, the 
+    |            conversationID, and the timestamp of the message. 
     |
     |   Pre-Condition: There is a Users table with value userId, 
-    |                  a conversation table with values conversationId, userId, and title,
-    |                  a message table with values messageId and conversationId.
-    |                  The userId value is used to identifythe user.
+    |                  a conversation table with values conversationId, userId,
+    |                  and title, a message table with values messageId and 
+    |                  conversationId. The userId value is used to identify the
+    |                  user.
     |
     |   Post-Condition: None
     |
@@ -235,9 +329,10 @@ public class Prog4 {
     |   Returns: void
     |   
     |   Author: Jordan Orvik
-    |   Extra background: I have typically used a PreparedStatement in previous code I've written,
-                          particularly for CSC 436, so I defaulted to using that here. 
-    *--------------------------------------------------------------*/
+    |   Extra background: I have typically used a PreparedStatement in previous
+    |                     code I've written, particularly for CSC 436, so I 
+    |                     defaulted to using that here. 
+    *------------------------------------------------------------------------*/
     public static void query1(int userId, Connection conn) {
         try {
             // Long query here - this will join these three components like messageID,
@@ -263,6 +358,25 @@ public class Prog4 {
     }
 
 
+    /*-------------------------------------------------------------------------
+    |   Method query2(Connection con)
+    |
+    |   Purpose: This method prints out the email, amount due, and time of last
+    |            conversation per each User with an outstanding invoice. 
+    |
+    |   Pre-Condition: The following tables exist: user, invoice, and
+    |                  conversation. And, they all have keys that "connect" to
+    |                  each other by being foreign keys.
+    |
+    |   Post-Condition: None
+    |
+    |   Parameters: 
+    |       con -- The Connection to JDBC to connect to SQL.
+    |
+    |   Returns: void
+    |   
+    |   Author: Annabelle Jonatan
+    *------------------------------------------------------------------------*/
     public static void query2(Connection conn) {
         try {
             // Long query that joins user, conversation and invoice and returns the
@@ -287,7 +401,7 @@ public class Prog4 {
     }
 
 
-    /*---------------------------------------------------------------
+    /*-------------------------------------------------------------------------
     |   Method query3(Connection conn)
     |
     |   Purpose: This method carries out the third required SQL query.
@@ -307,8 +421,8 @@ public class Prog4 {
     |   Parameters: 
     |       conn -- The Connection to JDBC to connect to SQL.
     |
-    |   Returns: N/A
-    *--------------------------------------------------------------*/
+    |   Returns: void
+    *------------------------------------------------------------------------*/
     public static void query3(Connection conn) {
         try {
             String sqlStatement = "SELECT p.name as personaName, " +
@@ -348,34 +462,39 @@ public class Prog4 {
         }
     }
 
-    /*---------------------------------------------------------------
+
+    /*-------------------------------------------------------------------------
     |   Method query4(int userId, Connection con)
     |
-    |   Purpose: This method returns the top 5 conversations with the highest average
-    |            rating for a specific user (identified by userId). The title and average rating
-    |            for each of the top 5 conversations is printed. If there are sql issues, they
-    |            are caught and an error message is displayed.
+    |   Purpose: This method returns the top 5 conversations with the highest 
+    |            average rating for a specific user (identified by userId). 
+    |            The title and average rating for each of the top 5 
+    |            conversations is printed. If there are sql issues, they are 
+    |            caught and an error message is displayed.
     |
-    |   Pre-Condition: There is a Users table with value userId, 
-    |                  a conversation table with values conversationId, userId, and title,
-    |                  a message table with values messageId and conversationId, and a feedback
-    |                  table with values messageId and rating. The userId value is used to identify
-    |                  the user for which we want to find the top 5 conversations. The conversationId
-    |                  value is used to connect the conversation table to the message table, and the
-    |                  messageId value is used to connect the message table to the feedback table.
+    |   Pre-Condition: There is a Users table with value userId, a conversation
+    |                  table with values conversationId, userId, and title, a 
+    |                  message table with values messageId and conversationId, 
+    |                  and a feedback table with values messageId and rating. 
+    |                  The userId value is used to identify the user for which 
+    |                  we want to find the top 5 conversations. The 
+    |                  conversationId value is used to connect the conversation
+    |                  table to the message table, and the messageId value is 
+    |                  used to connect the message table to the feedback table.
     |
     |   Post-Condition: None
     |
     |   Parameters: 
     |       con -- The Connection to JDBC to connect to SQL.
     |       userId -- the integer representing the user in the DBMS
-    
+    |
     |   Returns: void
     |   
     |   Author: Lane Molsbee
-    |   Extra background: I have typically used a PreparedStatement in previous code I've written,
-                          particularly for CSC 436, so I defaulted to using that here. 
-    *--------------------------------------------------------------*/
+    |   Extra background: I have typically used a PreparedStatement in previous
+    |                     code I've written, particularly for CSC 436, so I 
+    |                     defaulted to using that here. 
+    *------------------------------------------------------------------------*/
     public static void query4(int userId, Connection con) {
         try {
             String query = " SELECT c.title, AVG(f.rating) AS avg_rating " +
@@ -400,11 +519,13 @@ public class Prog4 {
         }
     }
 
+
     // FUNCTIONALITY #1 (Pearl)
 
-    /*---------------------------------------------------------------
+
+    /*-------------------------------------------------------------------------
     |   Method addUser(Connection conn, String name, String email, 
-    |                            String language, int tierID)
+    |          String language, int tierID)
     |
     |   Purpose: This method creates a new user and inserts it into 
     |            the Users table. In the process, a unique identifying
@@ -435,7 +556,7 @@ public class Prog4 {
     |   Returns: An integer representing the newly created user
     |            is returned (userId). Also, this new user is 
     |            inserted into the Users table.
-    *--------------------------------------------------------------*/
+    *------------------------------------------------------------------------*/
     public int addUser(Connection conn, String name, String email, String language, int tierID) {
         String sqlStatement = "INSERT INTO orvik.Users (userId, name, email, creationDate, language, tierId) VALUES (Users_seq.nextval, ?, ?, ?, ?, ?)";
         try {
@@ -469,9 +590,10 @@ public class Prog4 {
         }
     }
 
-    /*---------------------------------------------------------------
+
+    /*-------------------------------------------------------------------------
     |   Method updateUser(Connection conn, int userID, String toUpdate, 
-    |                     String changeStr, int newTier)
+    |          String changeStr, int newTier)
     |
     |   Purpose: This method changes a value in a specific row (based on
     |            userId) of the Users table. The value to change could be
@@ -513,7 +635,7 @@ public class Prog4 {
     |            successfully changed within a certain user's (userId)
     |            row of the Users table. If the toUpdate value is invalid
     |            or the value cannot be changed, false is returned.
-    *--------------------------------------------------------------*/
+    *------------------------------------------------------------------------*/
     public boolean updateUser(Connection conn, int userID, String toUpdate, String changeStr, int newTier) {
         // if toUpdate is "name"
         if (toUpdate.equals("name")) {
@@ -583,7 +705,8 @@ public class Prog4 {
         return false;
     }
 
-    /*---------------------------------------------------------------
+
+    /*-------------------------------------------------------------------------
     |   Method deleteUser(Connection conn, int userID)
     |
     |   Purpose: This method has the purpose of deleting a specific
@@ -616,7 +739,7 @@ public class Prog4 {
     |            removed from the Users table. If a user meets both 
     |            conditions and has been removed, true is returned. 
     |            Otherwise, false is returned.
-    *--------------------------------------------------------------*/
+    *------------------------------------------------------------------------*/
     public boolean deleteUser(Connection conn, int userID) {
 
         // First condition! User cannot have any unpaid invoices
@@ -689,13 +812,16 @@ public class Prog4 {
         }
     }
 
+
     // FUNCTIONALITY #2 (Jordan)
 
-   /*---------------------------------------------------------------
-    |   Method nwUser(Connection conn, int userID)
+
+   /*-------------------------------------------------------------------------
+    |   Method newConvo(Connection conn, int userID)
     |
     |   Purpose: Given a userId, this method has the purpose of creating a new 
-    |            conversation for the user based on the given persona, workspace, and title of the converation.
+    |            conversation for the user based on the given persona, 
+    |            workspace, and title of the converation.
     |
     |   Pre-Condition: There exists a Users table where each row
     |                  is identified (PK) by a unique userId value. This
@@ -705,7 +831,7 @@ public class Prog4 {
     |                  These values are linked to the conversation table
     |                  through a foreign key.
     |
-    |   Post-Condition: The conversation with all of its links has been created.
+    |   Post-Condition: The conversation with all of its links has been created
     |
     |   Parameters: 
     |       conn -- The Connection to JDBC to connect to SQL.
@@ -718,8 +844,9 @@ public class Prog4 {
     |       title -- The string representing the title of the conversation.
     |
     |
-    |   Returns: The ID of the new conversation such that it can be referenced later.
-    *--------------------------------------------------------------*/
+    |   Returns: The ID of the new conversation such that it can be referenced
+    |            later.
+    *------------------------------------------------------------------------*/
     public int newConvo(Connection conn, int userID, int personaID, int workspaceID, String title) {
         // Note the prepared statement syntax as well as the use of a sequence to minimize Java PRNG collsions.
         String sqlStatement = "INSERT INTO orvik.conversation (conversationId, userId, title, creationDate, personaId, workspaceId) VALUES (convo_seq.nextval, ?, ?, ?, ?, ?)";
@@ -755,8 +882,10 @@ public class Prog4 {
 
     }
 
-    /*---------------------------------------------------------------
-    |   Method addMessageToConvo(Connection conn, int conversationID, String message)
+
+    /*-------------------------------------------------------------------------
+    |   Method addMessageToConvo(Connection conn, int conversationID, 
+    |          String message)
     |
     |   Purpose: This method will add a message to a specific conversation.
     |
@@ -764,15 +893,18 @@ public class Prog4 {
     |   Pre-Condition: The message and conversation tables must exist alreadt.
     |                  convoId must point to a valid conversation in the table.
     |
-    |   Post-Condition: The message and its contents have been added to the message table.
+    |   Post-Condition: The message and its contents have been added to the 
+    |                   message table.
     |
     |   Parameters: 
     |       conn -- The Connection to JDBC to connect to SQL.
-    |       convoID -- The integer representing the current conversation to be added to.
-    |       message -- The string representing the message to be added to the conversation.
+    |       convoID -- The integer representing the current conversation to be 
+    |                  added to.
+    |       message -- The string representing the message to be added to the 
+    |                  conversation.
     |
     |   Returns: The ID of the new message such that it can be referenced later.
-    *--------------------------------------------------------------*/
+    *------------------------------------------------------------------------*/
     public int addMessageToConvo(Connection conn, int convoID, String message) {
 
         // See the comments in newConvo, these are barely any different.
@@ -804,26 +936,31 @@ public class Prog4 {
         }
     }
 
-    /*---------------------------------------------------------------
-    |   Method aupdateMessageFeedback(Connection conn, int messageID, int rating, String feedback)
+
+    /*-------------------------------------------------------------------------
+    |   Method aupdateMessageFeedback(Connection conn, int messageID,
+    |          int rating, String feedback)
     |
-    |   Purpose: This method will add feedback to a particular message and store it in the table.
+    |   Purpose: This method will add feedback to a particular message and 
+    |            store it in the table.
     |
     |
     |
-    |   Pre-Condition: messageID must be pointing to a valid message in the table.
-    |                  Rating is a number between one and five.
+    |   Pre-Condition: messageID must be pointing to a valid message in the 
+    |                  table. Rating is a number between one and five.
     |
-    |   Post-Condition: The message and its contents have been added to the message table.
+    |   Post-Condition: The message and its contents have been added to the 
+    |                   message table.
     |
     |   Parameters: 
     |       conn -- The Connection to JDBC to connect to SQL.
-    |       messageID -- The integer representing the current message to add feedback to.
+    |       messageID -- The integer representing the current message to add 
+    |                    feedback to.
     |       rating -- The integer representing the rating of the message.
     |       feedback -- The string representing the feedback of the message.
     |
     |   Returns: The ID of the new message such that it can be referenced later.
-    *--------------------------------------------------------------*/
+    *------------------------------------------------------------------------*/
     public boolean updateMsgFeedback(Connection conn, int messageID, int rating, String feedback) {
 
         // see above inline comments.
@@ -842,24 +979,29 @@ public class Prog4 {
         return true;
     }
 
-    /*---------------------------------------------------------------
+
+    /*-------------------------------------------------------------------------
     |   Method deleteUserMessages(Connection conn, int userID)
     |
-    |   Purpose: This method will delete all of a user's messages from our server.
-    |            This is likely used when a user is deleted from our database.
+    |   Purpose: This method will delete all of a user's messages from our
+    |            server. This is likely used when a user is deleted from our 
+    |            database.
     |
     |
     |
     |   Pre-Condition: userID must have had messages in the table.
     |
-    |   Post-Condition: All of the user's messages will have been deleted from our table.
+    |   Post-Condition: All of the user's messages will have been deleted from
+    |                   our table.
     |
     |   Parameters: 
     |       conn -- The Connection to JDBC to connect to SQL.
-    |       userID -- The integer representing the current user to delete messages from.
+    |       userID -- The integer representing the current user to delete 
+    |                 messages from.
     |
-    |   Returns:  A boolean representing whether or not the deletion was successful.
-    *--------------------------------------------------------------*/
+    |   Returns:  A boolean representing whether or not the deletion was
+    |             successful.
+    *------------------------------------------------------------------------*/
     public boolean deleteUserMessages(Connection conn, int userID) {
 
         // Delete the entries where the userID matches.
@@ -877,9 +1019,11 @@ public class Prog4 {
         }
     }
 
+
     // FUNCTIONALITY #3 (Pearl)
 
-    /*---------------------------------------------------------------
+
+    /*-------------------------------------------------------------------------
     |   Method createWorkspace(Connection conn, int userID, String name)
     |
     |   Purpose: This method creates a new workspace. A workspace only 
@@ -910,7 +1054,7 @@ public class Prog4 {
     |   Returns: An integer representing the newly created workspace
     |            is returned (workspaceId). Also, this workspace is 
     |            inserted into the workspace table.
-    *--------------------------------------------------------------*/
+    *------------------------------------------------------------------------*/
     public int createWorkspace(Connection conn, int userID, String name) {
         // sql statement for creating a new workspace
         String sqlStatement = "INSERT INTO orvik.workspace (workspaceId, name) VALUES (workspace_seq.nextval, ?)";
@@ -939,9 +1083,10 @@ public class Prog4 {
         }
     }
 
-    /*---------------------------------------------------------------
+
+    /*-------------------------------------------------------------------------
     |   Method createMembership(Connection conn, int userID, 
-    |                          int workspaceID)
+    |          int workspaceID)
     |
     |   Purpose: This method connects a workspace to a user. This is done
     |            by adding a row to the workspaceMembership table which
@@ -965,7 +1110,7 @@ public class Prog4 {
     |                      to a user.
     |
     |   Returns: None.
-    *--------------------------------------------------------------*/
+    *------------------------------------------------------------------------*/
     public void createMembership(Connection conn, int userID, int workspaceID) {
         // sql statement to create a new workspace membership
         // this is a connection between user and workspace
@@ -985,9 +1130,10 @@ public class Prog4 {
         }
     }
 
-    /*---------------------------------------------------------------
+
+    /*-------------------------------------------------------------------------
     |   Method changeWorkspaceName(Connection conn, int workspaceID, 
-    |                              String newName)
+    |          String newName)
     |
     |   Purpose: This method allows for the changing of the name of a
     |            specific workspace identified by its workspaceId. The 
@@ -1014,7 +1160,7 @@ public class Prog4 {
     |   Returns: This method returns true if the name of the workspace
     |            was successfully changed to the parameter newName. If there
     |            were any issues in sql, false is returned.
-    *--------------------------------------------------------------*/
+    *------------------------------------------------------------------------*/
     public boolean changeWorkspaceName(Connection conn, int workspaceID, String newName) {
         // sql statement to change workspace name
         String sqlStatement = "UPDATE orvik.workspace SET name = ? WHERE workspaceId = ?";
@@ -1035,10 +1181,10 @@ public class Prog4 {
         }
     }
 
-    /*---------------------------------------------------------------
+
+    /*-------------------------------------------------------------------------
     |   Method addWorkspaceConvo(Connection conn, int userID, 
-    |                            int personaID, int workspaceID, 
-    |                            String title)
+    |          int personaID, int workspaceID, String title)
     |
     |   Purpose: This method adds a conversation to a workspace. In
     |            order for this to happen, a condition must first be met.
@@ -1072,7 +1218,7 @@ public class Prog4 {
     |   Returns: An integer representing the newly created workspace 
     |            conversation is returned (conversationId). Also, this 
     |            conversation is inserted into the convo table.
-    *--------------------------------------------------------------*/
+    *------------------------------------------------------------------------*/
     public int addWorkspaceConvo(Connection conn, int userID, int personaID, int workspaceID, String title) {
         // sql statement to get items in workspaceMembership with specific userId and
         // workspaceId
@@ -1104,8 +1250,11 @@ public class Prog4 {
         }
     }
 
+
     // FUNCTIONALITY #4 (Jordan)
-    /*---------------------------------------------------------------
+
+
+    /*-------------------------------------------------------------------------
     |   Method createPersona(Connection conn, String name, String directive)
     |
     |   Purpose: This method will create a new persona(lity) in our LLM system.
@@ -1116,16 +1265,18 @@ public class Prog4 {
     |
     |   Pre-Condition: None (apart from the connection being solid.)
     |
-    |   Post-Condition: The new persona with its name and instructions will be created.
+    |   Post-Condition: The new persona with its name and instructions will be 
+    |                   created.
     |
     |
     |   Parameters: 
     |       conn -- The Connection to JDBC to connect to SQL.
     |       name -- The name of the new persona.
-    |       directive -- The instructions of the new persona. The model will read this when generating messages.
+    |       directive -- The instructions of the new persona. The model will 
+    |                    read this when generating messages.
     |
     |   Returns: The ID of the new persona such that it can be referenced later.
-    *--------------------------------------------------------------*/
+    *------------------------------------------------------------------------*/
     public int createPersona(Connection conn, String name, String directive) {
 
         // see newConvo's comments, they're almost identical to this.
@@ -1151,7 +1302,8 @@ public class Prog4 {
 
     }
 
-    /*---------------------------------------------------------------
+
+    /*-------------------------------------------------------------------------
     |   Method delete(Connection conn, int personaID)
     |
     |   Purpose: This method will delete a persona from our LLM system.
@@ -1159,7 +1311,8 @@ public class Prog4 {
     |
     |   Pre-Condition: personaID must point to a valid persona in the table.
     |
-    |   Post-Condition: The given persona will be deleted from the persona table.
+    |   Post-Condition: The given persona will be deleted from the persona 
+    |                   table.
     |
     |
     |   Parameters: 
@@ -1167,7 +1320,7 @@ public class Prog4 {
     |       personaID -- The integer representing the current persona to be deleted.
     |
     |   Returns: A boolean representing whether or not the deletion was successful.
-    *--------------------------------------------------------------*/
+    *------------------------------------------------------------------------*/
     public boolean deletePersona(Connection conn, int personaID) {
 
         // If we have a persona with more than 5 conversations, we can't delete it.
@@ -1202,12 +1355,13 @@ public class Prog4 {
         }
     }
 
+
     // FUNCTIONALITY #5 (Pearl)
 
-    /*---------------------------------------------------------------
+
+    /*-------------------------------------------------------------------------
     |   Method addPromptTemplate(Connection conn, String title, 
-    |                            String content, int userID,
-    |                            int workspaceID)
+    |          String content, int userID, int workspaceID)
     |
     |   Purpose: This method creates a new promptTemplate and adds it
     |            as a new row to the promptTemplate table. In the process
@@ -1239,7 +1393,7 @@ public class Prog4 {
     |   Returns: An integer representing the newly created prompt template
     |            is returned (templateId). Also, this new template is 
     |            inserted into the template table.
-    *--------------------------------------------------------------*/
+    *------------------------------------------------------------------------*/
     public int addPromptTemplate(Connection conn, String title, String content, int userID, int workspaceID) {
         String sqlStatement = "INSERT INTO orvik.promptTemplate (templateId, title, content, userId, workspaceId) VALUES (promptTemplate_seq.nextval, ?, ?, ?, ?)";
         try {
@@ -1271,9 +1425,10 @@ public class Prog4 {
         }
     }
 
-    /*---------------------------------------------------------------
+
+    /*-------------------------------------------------------------------------
     |   Method updatePromptTemplate(Connection conn, int templateID,
-    |                              String toUpdate, String changeStr)
+    |          String toUpdate, String changeStr)
     |
     |   Purpose: This method updates a value in the promptTemplate 
     |            table if its templateId matches that of the parameter.
@@ -1308,7 +1463,7 @@ public class Prog4 {
     |   Returns: This returns true if the table was successfully updated
     |            and false otherwise. If the toUpdate string is not
     |            "title" or "content", then false is automatically returned.
-    *--------------------------------------------------------------*/
+    *------------------------------------------------------------------------*/
     public boolean updatePromptTemplate(Connection conn, int templateID, String toUpdate, String changeStr) {
         // if we want to update the prompt template title
         if (toUpdate.equals("title")) {
@@ -1354,29 +1509,35 @@ public class Prog4 {
         return false;
     }
 
+
     // FUNCTIONALITY #6 (Jordan)
-    /*---------------------------------------------------------------
+
+
+    /*-------------------------------------------------------------------------
     |   Method updateSubscription(Connection conn, int userID, int tierID)
     |
     |   Purpose: Updates the subscription tier of a user in our LLM system.
-    |            This will happen whenever a user subscribes to a higher tier and gets promoted
-    |            or unsubscribes from a higher tier and gets demoted.
+    |            This will happen whenever a user subscribes to a higher tier
+    |            and gets promoted or unsubscribes from a higher tier and 
+    |            gets demoted.
     |
     |
     |
     |   Pre-Condition: userID must be a valid user in our system.
-    |                  tierID must be a valid tier in our system (corresponding to a row in the tier table).
+    |                  tierID must be a valid tier in our system (corresponding
+    |                  to a row in the tier table).
     |
     |   Post-Condition: The subscription status of our user will be updated.
     |
     |
     |   Parameters: 
     |       conn -- The Connection to JDBC to connect to SQL.
-    |       userID -- The identifier (PK) for which user that we want to update in some way.
+    |       userID -- The identifier (PK) for which user that we want to update
+    |                 in some way.
     |       tierID -- The tier that we will update the user to.
     |
     |   Returns: The ID of the new persona such that it can be referenced later.
-    *--------------------------------------------------------------*/
+    *------------------------------------------------------------------------*/
     public boolean updateSubscription(Connection conn, int userID, int tierID) {
 
         // Uses an UPDATE statement instead of an INSERT.
@@ -1396,15 +1557,15 @@ public class Prog4 {
     }
 
 
-    /*---------------------------------------------------------------
+    /*-------------------------------------------------------------------------
     |   Method withinLimit(Connection conn, int userID)
     |
     |   Purpose: This method will load a particular user's information,
     |            specifically the number of messages they have sent (tokens)
-    |            and their message limit. Once it has those, it will check to see
-    |            if they are within their message limit (based on their membership tier).
-    |            This will be tied into sending messages and return an error message
-    |            if they are over their limit.
+    |            and their message limit. Once it has those, it will check to 
+    |            see if they are within their message limit (based on their 
+    |            membership tier). This will be tied into sending messages 
+    |            and return an error message if they are over their limit.
     |
     |
     |   Pre-Condition: userID must be a valid user in our system.
@@ -1416,8 +1577,9 @@ public class Prog4 {
     |       conn -- The Connection to JDBC to connect to SQL.
     |       userID -- The user that we are checking their limit against.
     |
-    |   Returns: A boolean representing whether or not the user is within their limit or not.
-    *--------------------------------------------------------------*/
+    |   Returns: A boolean representing whether or not the user is within their
+    |            limit or not.
+    *------------------------------------------------------------------------*/
     public boolean withinLimit(Connection conn, int userID) {
         // Takes the number of messages a user has sent and their message limit
         // and joins it with the user table
@@ -1447,9 +1609,11 @@ public class Prog4 {
         return true;
     }
 
+
     // FUNCTIONALITY #7 (Pearl)
 
-    /*---------------------------------------------------------------
+
+    /*-------------------------------------------------------------------------
     |   Method newInvoice(Connection conn, int userID, int amount)
     |
     |   Purpose: This method creates a new invoice and adds it to the
@@ -1475,7 +1639,7 @@ public class Prog4 {
     |   Returns: An integer representing the newly created invoice is
     |            returned (invoiceId). Also, this new invoice is 
     |            inserted into the invoice table. 
-    *--------------------------------------------------------------*/
+    *------------------------------------------------------------------------*/
     public int newInvoice(Connection conn, int userID, double amount) {
         // sql statement to add new invoice to table
         String sqlStatement = "INSERT INTO orvik.invoice (invoiceId, userId, amount, invoiceDate, status) VALUES (invoice_seq.nextval, ?, ?, ?, ?)";
@@ -1508,7 +1672,8 @@ public class Prog4 {
         }
     }
 
-    /*---------------------------------------------------------------
+
+    /*-------------------------------------------------------------------------
     |   Method paidBill(Connection conn, int invoiceID)
     |
     |   Purpose: This method takes an invoiceID as a parameter and 
@@ -1533,7 +1698,7 @@ public class Prog4 {
     |            the identifier invoiceID had its status changed to
     |            "PAID". If this is not able to happen, false is 
     |            returned by the method.
-    *--------------------------------------------------------------*/
+    *------------------------------------------------------------------------*/
     public boolean paidBill(Connection conn, int invoiceID) {
         // statement to update invoice status to "PAID"
         String sqlStatement = "UPDATE orvik.invoice SET status = ? WHERE invoiceId = ?";
@@ -1552,27 +1717,34 @@ public class Prog4 {
         }
     }
 
+
     // FUNCTIONALITY #8 (Jordan)
-    /*---------------------------------------------------------------
-    |   Method openTicket(Connection conn, int userID, int agentID, String topic)
+    /*-------------------------------------------------------------------------
+    |   Method openTicket(Connection conn, int userID, int agentID,  
+    |          String topic)
     |
-    |   Purpose: This method will open a support ticket assigned to a user and an agent.
-    |            This will be useful if we have any problems with our system, people can add to them
+    |   Purpose: This method will open a support ticket assigned to a user and 
+    |            an agent. This will be useful if we have any problems with our
+    |            system, people can add to them
     |
     |
-    |   Pre-Condition: userID and agentID must point to a valid user and agent in the table.
+    |   Pre-Condition: userID and agentID must point to a valid user and agent 
+    |                  in the table.
     |
-    |   Post-Condition: The new support ticket will be added to the support ticket table with OPEN status.
+    |   Post-Condition: The new support ticket will be added to the support 
+    |                   ticket table with OPEN status.
     |
     |
     |   Parameters: 
     |       conn -- The Connection to JDBC to connect to SQL.
-    |       userID -- The integer representing the current user to be added to the support ticket.
-    |       agentID -- The integer representing the current agent to be added to the support ticket.
+    |       userID -- The integer representing the current user to be added to
+    |                 the support ticket.
+    |       agentID -- The integer representing the current agent to be added 
+    |                  to the support ticket.
     |       topic -- The string representing the topic of the support ticket
     |
     |   Returns: The ID of the ticket such that it can be referenced later.
-    *--------------------------------------------------------------*/
+    *------------------------------------------------------------------------*/
     public int openTicket(Connection conn, int userID, int agentID, String topic) {
         String sqlStatement = "INSERT INTO orvik.supportTicket (ticketId, userId, agentId, topic, duration, outcome) VALUES (ticket_seq.nextval, ?, ?, ?, ?, ?)";
         try {
@@ -1602,10 +1774,12 @@ public class Prog4 {
         }
     }
 
-    /*---------------------------------------------------------------
-    |   MethoddeleteTicket(Connection conn, int ticketID)
+
+    /*-------------------------------------------------------------------------
+    |   Method deleteTicket(Connection conn, int ticketID)
     |
-    |   Purpose: This method will close out a support ticket by setting the status to CLOSED.
+    |   Purpose: This method will close out a support ticket by setting the 
+    |            status to CLOSED.
     |
     |
     |   Pre-Condition: ticketID must point to a valid ticket in the table.
@@ -1615,12 +1789,14 @@ public class Prog4 {
     |
     |   Parameters: 
     |       conn -- The Connection to JDBC to connect to SQL.
-    |       ticketID -- The integer representing the current ticket to be added to the support ticket.
-    |       duration -- The integer representing the duration of the ticket in minutes.
+    |       ticketID -- The integer representing the current ticket to be 
+    |                   added to the support ticket.
+    |       duration -- The integer representing the duration of the ticket in
+    |                   minutes.
     |
     |
     |   Returns: A boolean which identifies whether the ticket was successfully closed.
-    *--------------------------------------------------------------*/
+    *------------------------------------------------------------------------*/
     public boolean closeTicket(Connection conn, int ticketID, int duration) {
         String sqlStatement = "UPDATE orvik.ticket SET outcome = ?, duration = ? WHERE ticketId = ?";
         try {
@@ -1638,20 +1814,28 @@ public class Prog4 {
     }
 
 
-    /*
-    | isViable (num)
+    // HELPER METHOD BELOW (Annabelle)
+
+
+    /*-------------------------------------------------------------------------
+    |   Method isViable(String num, String doubOrInt)
     |
-    | PURPOSE: To confirm that the user-specified number input in loopMechanism
-    |   is a valid integer or double.
+    |   Purpose: To confirm that the user-specified number input in 
+    |            loopMechanism is a valid integer or double.
     |
-    | PRE/POST COND: 
-    |    PRE: N/A.
-    |   POST: N/A.
     |
-    | RETURN: true if the String is an int/double, false otherwise. 
+    |   Pre-Condition: None
     |
-    | PARAMs: num (a string representation of the user-specified number).
-    */
+    |   Post-Condition: None
+    |
+    |
+    |   Params: num (a string representation of the user-specified number),
+    |           doubOrInt (a string specifying 'double' or 'int')
+    |
+    |   Returns: true if the String is an int/double, false otherwise. 
+    |
+    |   Author: Annabelle Jonatan
+    *------------------------------------------------------------------------*/
     private boolean isViable(String num, String doubOrInt)
     {
         if (doubOrInt.contentEquals("double")) {
