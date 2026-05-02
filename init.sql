@@ -24,6 +24,12 @@ CREATE SEQUENCE convo_seq START WITH 100 INCREMENT BY 1;
 CREATE SEQUENCE message_seq START WITH 100 INCREMENT BY 1;
 CREATE SEQUENCE persona_seq START WITH 100 INCREMENT BY 1;
 CREATE SEQUENCE ticket_seq START WITH 100 INCREMENT BY 1;
+CREATE SEQUENCE Users_seq START WITH 100 INCREMENT BY 1;
+CREATE SEQUENCE workspace_seq START WITH 100 INCREMENT BY 1;
+CREATE SEQUENCE promptTemplate_seq START WITH 100 INCREMENT BY 1;
+CREATE SEQUENCE invoice_seq START WITH 100 INCREMENT BY 1;
+
+
 
 -- 1. membershipTier (no dependencies)
 -- This table defines the different membership tiers available for users, along with

@@ -209,6 +209,68 @@ public class Prog4 {
         }
     }
 
+
+    /*---------------------------------------------------------------
+    |   Method query3(Connection conn)
+    |
+    |   Purpose: This method carries out the third required SQL query.
+    |            It is supposed to answer: Identify the “Most Helpful” 
+    |            Persona: List the persona name that has received the 
+    |            highest percentage of “Thumbs Up” feedback across all 
+    |            conversations linked to it. The result will be neatly
+    |            printed.
+    |
+    |   Pre-Condition: The following tables exist: persona, conversation
+    |                  message, and feedback. And, they all have keys that
+    |                  "connect" to each other by being foreign keys.
+    |
+    |   Post-Condition: None of the tables have changed. Data has been
+    |                   gathered from them and printed out.
+    |
+    |   Parameters: 
+    |       conn -- The Connection to JDBC to connect to SQL.
+    |
+    |   Returns: N/A
+    *--------------------------------------------------------------*/
+    public static void query3(Connection conn) {
+        try {
+            String sqlStatement = "SELECT p.name as personaName, " +
+            // f.rating is either 1 or 0?? 
+            // so we can take the average and multiply by 100 to get %
+                "ROUND(AVG(f.rating) * 100, 2) as thumbsUpPercent " + 
+            // we want the persona name
+            "FROM orvik.persona p " + 
+                // but we have to get to feedback, so first we connect to conversation
+                "JOIN orvik.conversation c ON p.personaId = c.personaId " + 
+                // then we connect to message
+                "JOIN orvik.message m ON c.conversationId = m.conversationId " + 
+                // and finally we connect to feedback
+                "JOIN orvik.feedback f ON m.messageId = f.messageId " +
+            // sort by the personaId and name (since we print name)
+            "GROUP BY p.personaId, p.name " + 
+            // descending order of average ratings
+            "ORDER BY AVG(f.rating) DESC " +
+            // we only want the first one!
+            "FETCH FIRST 1 ROWS ONLY";
+
+            PreparedStatement stmt = conn.prepareStatement(sqlStatement);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                // get persona name
+                String name = rs.getString("personaName");
+                // get percentage
+                double percentage = rs.getDouble("thumbsUpPercent");
+                // print out the name
+                System.out.print("Persona Name: " + name + " ");
+                // print out their percentage
+                System.out.println("Thumb's Up Percentage: " + percentage + "%");
+            }
+        } catch (SQLException e) {
+            // catch sql exceptions
+            System.out.println("Could not execute Query #3: " + e.getMessage());
+        }
+    }
+
     /*---------------------------------------------------------------
     |   Method query4(int userId, Connection con)
     |
