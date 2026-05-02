@@ -82,7 +82,8 @@ public class Prog4 {
         String query = "";
 
         // SHOW OPTIONS
-        printOptions();
+        System.out.println("");
+        System.out.println("Enter 'exit' to exit the program, 'functionalities' for functionality options, and 'queries' for query options.");
         System.out.println("");
 
         while (loopRun == true) {
@@ -92,8 +93,12 @@ public class Prog4 {
 
             if (query.contentEquals("exit"))
                 loopRun = false;
-            else if (query.contentEquals("help"))
-                printOptions();
+            else if (query.contentEquals("functionalities 1"))
+                printFunctionalities(1);
+            else if (query.contentEquals("functionalities 2"))
+                printFunctionalities(2);
+            else if (query.contentEquals("queries"))
+                printQueries();
             else
                 queryToAction(query, conn);
             System.out.println("");
@@ -104,32 +109,73 @@ public class Prog4 {
     }
 
     // Prints all the user functionality options
-    private static void printOptions() {
-        System.out.println("");
-        System.out.println("|-----------------------------------------------------------------|");
-        System.out.println("FUNCTIONALITIES:");
-        System.out.println("   USER...");
-        System.out.println("      add user: 'user.add <string NAME> <string EMAIL> <string LANGUAGE> <int TIER>'");
-        System.out.println("      update user information: 'user.update <int USERID> <string name/email/language" +
-                " OR int tier> <string NEW NAME/ETC.> <int NEW TIER>'");
-        System.out.println("      delete user: 'user.delete <int USERID>'");
-        System.out.println("   CONVERSATION...");
-        System.out.println("      ");
-        System.out.println("   WORKSPACE...");
-        System.out.println("      ");
-        System.out.println("   PERSONA...");
-        System.out.println("      ");
-        System.out.println("   TEMPLATE...");
-        System.out.println("      ");
-        System.out.println("   SUBSCRIPTION...");
-        System.out.println("      ");
-        System.out.println("   INVOICE...");
-        System.out.println("      ");
-        System.out.println("   TICKET...");
-        System.out.println("      ");
-        System.out.println("|-----------------------------------------------------------------|");
+    private static void printFunctionalities(int page) {
+        if (page == 1) {
+            System.out.println("");
+            System.out.println("~ ~ ~");
+            System.out.println("FUNCTIONALITIES 1:");
+            System.out.println("   USER...");
+            System.out.println("      create user: 'user.create <string NAME> <string EMAIL> <string LANGUAGE> <int TIER>'");
+            System.out.println("      change user information: 'user.change <int USERID> <'name'/'email'/'language'/'tierId'>");
+            System.out.println("         <string NEW VALUE> <int NEW TIER>'")
+            System.out.println("      delete user: 'user.delete <int USERID>'");
+            System.out.println("   CONVERSATION...");
+            System.out.println("      create convo: 'convo.create <int USERID> <int PERSONAID> <int WORKSPACEID> <string TITLE>'");
+            System.out.println("      add msg to convo: 'convo.add <int CONVOID> <string MESSAGE>'");
+            System.out.println("      add feedback to msg: 'convo.feedback <int MESSAGEID> <int RATING> <string FEEDBACK>'");
+            System.out.println("   WORKSPACE...");
+            System.out.println("      create workspace: 'workspace.create <int USERID> <string NAME>'");
+            System.out.println("      create membership: 'workspace.member <int USERID> <int WORKSPACEID>'");
+            System.out.println("      change workspace name: 'workspace.change <int WORKSPACEID> <string NEW NAME>'");
+            System.out.println("      add convo to workspace: 'workspace.add <int USERID> <int PERSONAID> <int WORKSPACEID> <string TITLE>'");
+            System.out.println("   PERSONA...");
+            System.out.println("      create persona: 'persona.create <string NAME> <string DIRECTIVE>'");
+            System.out.println("      delete persona: 'persona.delete <int PERSONAID>'");
+            System.out.println("~ ~ ~");
+            System.out.println("");
+        } else if (page == 2) {
+            System.out.println("");
+            System.out.println("~ ~ ~");
+            System.out.println("FUNCTIONALITIES 2:");
+            System.out.println("   TEMPLATE...");
+            System.out.println("      create template: 'template.create <string TITLE> <string CONTENT> <int USERID> <int WORKSPACEID>'");
+            System.out.println("      change template: 'template.change <int TEMPLATEID> <'title'/'content'> <string NEW VALUE>'");
+            System.out.println("   SUBSCRIPTION...");
+            System.out.println("      change subscription: 'subscription.change <int USERID> <int NEW TIER>'");
+            System.out.println("   INVOICE...");
+            System.out.println("      create invoice: 'invoice.create <int USERID> <double AMOUNT>'");
+            System.out.println("      pay invoice: 'invoice.pay <int INVOICEID>'");
+            System.out.println("   TICKET...");
+            System.out.println("      open ticket: 'ticket.open <int USERID> <int AGENTID> <string TOPIC>'");
+            System.out.println("      close ticket: 'ticket.close <int TICKETID> <int NUMBER OF MINUTES TAKEN>'");
+            System.out.println("~ ~ ~");
+            System.out.println("");
+        }
+        System.out.println("EXAMPLE: 'user.change 2 language mandarin 5' (Note: as language is chosen, 5 is ignored)");
         System.out.println("");
     }
+
+
+    private static void printQueries() {
+        System.out.println("");
+        System.out.println("~ ~ ~");
+        System.out.println("QUERIES:");
+        System.out.println("   QUERY 1...");
+        System.out.println("      List all bookmarked messages' conversation titles and timestamps from a given User:");
+        System.out.println("      'query1 <int USERID>'");
+        System.out.println("   QUERY 2...");
+        System.out.println("      List email, amount owed, last conversation for all Users with unpaid invoices:");
+        System.out.println("      'query2'");
+        System.out.println("   QUERY 3...");
+        System.out.println("      List most helpful Personas (most thumbs ups across all conversations):");
+        System.out.println("      'query3'");
+        System.out.println("   QUERY 4...");
+        System.out.println("      List top 5 conversations' title and average rating from a given User:");
+        System.out.println("      'query4 <int USERID>'");
+        System.out.println("~ ~ ~");
+        System.out.println("");
+    }
+
 
     // Processes query sent by user and sends it on its way to the right method
     // Currently partial duplicate of code from my Prog3; not functional!
@@ -137,28 +183,14 @@ public class Prog4 {
         // Split for processing the query and its parameters
         String[] split = query.split(" ");
 
-        // Check if the query matches the format requirements for each of the 4
+        // !!!!! IF DELETEUSER, CALL DELETEUSERMESSAGES!
+        //       IF ADDMESSSAGE CALL WITHINLIMIT
+
+        // Check to see which query/functionality to run
         if ((query.charAt(0) == '1') && (split.length == 1)) {
-            // If so, convert to the SQL queries and load to the needed method
-            queryOne(new String[] { "SELECT count(*) as numOfIncidents FROM "
-                    + "ajonatan1980",
-                    "SELECT count(*) as numOfIncidents FROM "
-                            + "ajonatan1995",
-                    "SELECT count(*) as numOfIncidents FROM "
-                            + "ajonatan2010",
-                    "SELECT count(*) as numOfIncidents FROM "
-                            + "ajonatan2025" },
-                    dbconn);
+            
             return;
-        } else if ((query.charAt(0) == '2') && (split.length == 2)) {
-            if (isViable(split[1])) {
-                queryTwo("SELECT * FROM ( SELECT statename, COUNT(*) as" +
-                        " numOfIncidents FROM ajonatan" + Integer.parseInt(split[1])
-                        + " GROUP BY statename ORDER BY numOfIncidents DESC ) " +
-                        "WHERE ROWNUM <= 10", dbconn);
-                return;
-            }
-        }
+        } 
         // If it matches none of them, print an error and move on
         System.out.println("ERROR: INCORRECT SYNTAX OR QUERY.");
     }
@@ -211,7 +243,7 @@ public class Prog4 {
     }
 
 
-    public static void query2(int userId, Connection conn) {
+    public static void query2(Connection conn) {
         try {
             // Long query that joins user, conversation and invoice and returns the
             // email, amount owed and most recent conversation date for all outstanding
