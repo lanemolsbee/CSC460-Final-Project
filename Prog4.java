@@ -3,7 +3,7 @@ import java.time.*;
 import java.util.*;
 
 public class Prog4 {
-    // CONN + INTERFACE (Annabelle <== comments are for TAs so I'm using this name)
+    // INTERFACE (Annabelle)
     public static void main(String[] args) {
         // Call connector to connect to DB
         if (args.length < 2) {
@@ -14,6 +14,7 @@ public class Prog4 {
     }
 
     // Connects to the Database and calls loopMechanism
+    // JDBC LOGIN HANDLING (Jordan, thank you Jordan!)
     private static void connector(String username, String password) {
         // INITIALIZE (including all DB stuff)
         System.out.println("");
@@ -203,6 +204,30 @@ public class Prog4 {
             while (rs.next()) {
                 System.out.println(rs.getInt("messageId") + " " + rs.getInt("conversationId") + " "
                         + rs.getTimestamp("timestamp"));
+            }
+        } catch (SQLException e) {
+            System.out.println("Could not execute Query #1: " + e.getMessage());
+        }
+    }
+
+
+    public static void query2(int userId, Connection conn) {
+        try {
+            // Long query that joins user, conversation and invoice and returns the
+            // email, amount owed and most recent conversation date for all outstanding
+            // invoices.
+            String queryString = "SELECT email, amount, orvik.conversation.creationDate "+
+            "FROM orvik.users JOIN orvik.invoice USING (userId) JOIN orvik.conversation "+
+            "USING (userId) WHERE status='UNPAID' AND orvik.conversation.creationDate IN "+
+            "(SELECT max(orvik.conversation.creationDate) as maxDate FROM orvik.users "+
+            "JOIN orvik.conversation USING (userId) GROUP BY userId);";
+
+            // No need for PreparedStatement due to no User input.
+            ResultSet rs = stmt.executeQuery();
+            System.out.println("All outstanding invoices are:");
+            while (rs.next()) {
+                System.out.println(rs.getString("email") + " " + rs.getInt("amount") + " "
+                        + rs.getTimestamp("creationDate"));
             }
         } catch (SQLException e) {
             System.out.println("Could not execute Query #1: " + e.getMessage());
