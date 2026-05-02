@@ -124,7 +124,7 @@ CREATE TABLE message(
 CREATE TABLE feedback(
     messageId INT PRIMARY KEY,
     rating INT NOT NULL,
-    feedback CLOB,
+    feedback VARCHAR2(1000),
     FOREIGN KEY (messageId) REFERENCES message(messageId)
 );
 
