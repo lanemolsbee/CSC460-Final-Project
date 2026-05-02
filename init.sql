@@ -127,6 +127,16 @@ CREATE TABLE feedback(
 -- It includes a foreign key to the Users table to represent the user who made the bookmark
 -- as well as a foreign key to the message that was bookmarked. It has a composite primary key
 -- of those two attributes. 
+CREATE TABLE bookmark(
+    userId INT NOT NULL,
+    messageId INT NOT NULL,
+    PRIMARY KEY (userId, messageId),
+    FOREIGN KEY (userId) REFERENCES Users(userId),
+    FOREIGN KEY (messageId) REFERENCES message(messageId)
+);
+
+
+-- write the comment for this one?
 CREATE TABLE workspaceMembership(
     userId INT NOT NULL,
     workspaceId INT NOT NULL,
