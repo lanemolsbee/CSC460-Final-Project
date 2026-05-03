@@ -262,10 +262,10 @@ INSERT INTO workspace VALUES (2, 'AI Research');
 -- =========================
 -- 5. workspaceMembership
 -- =========================
-INSERT INTO workspaceMembership VALUES (1, 1);
-INSERT INTO workspaceMembership VALUES (2, 1);
-INSERT INTO workspaceMembership VALUES (3, 2);
-INSERT INTO workspaceMembership VALUES (4, 2);
+-- INSERT INTO workspaceMembership VALUES (1, 1);
+-- INSERT INTO workspaceMembership VALUES (2, 1);
+-- INSERT INTO workspaceMembership VALUES (3, 2);
+-- INSERT INTO workspaceMembership VALUES (4, 2);
 
 -- =========================
 -- 6. conversation
