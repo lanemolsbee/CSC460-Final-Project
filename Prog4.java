@@ -460,7 +460,7 @@ public class Prog4 {
 
 
     /*-------------------------------------------------------------------------
-    |   Method query1(int userId, Connection con)
+    |   Method query1(int userId, Connection conn)
     |
     |   Purpose: This method takes in a given userID and returns all of the 
     |            bookmarked messages across all of their conversations.
@@ -491,10 +491,10 @@ public class Prog4 {
             // Long query here - this will join these three components like messageID,
             // conversationID, and timeStamp
             // And then select only bookmarked messages.
-            String queryString = "SELECT messageId, conversationId, timestamp FROM orvik.message JOIN orvik.conversation"
-                    +
-                    "ON orvik.message.conversationId = orvik.conversation.conversationId" +
-                    " WHERE messageId IN (SELECT messageId FROM orvik.bookmark WHERE userId = ?);";
+            String queryString = "SELECT m.messageId, c.title, m.timestamp " +
+                     "FROM orvik.message m JOIN orvik.conversation c " +
+                     "ON m.conversationId = c.conversationId " +
+                     "WHERE m.messageId IN (SELECT messageId FROM orvik.bookmark WHERE userId = ?)";
 
             // Using a PreparedStatement here to prevent SQL injection.
             PreparedStatement stmt = conn.prepareStatement(queryString);
@@ -502,7 +502,7 @@ public class Prog4 {
             ResultSet rs = stmt.executeQuery();
             System.out.println("Bookmarks for User " + userId + " (Use the message ID to view the message):");
             while (rs.next()) {
-                System.out.println(rs.getInt("messageId") + " " + rs.getInt("conversationId") + " "
+                System.out.println(rs.getInt("messageId") + " " + rs.getString("title") + " "
                         + rs.getTimestamp("timestamp"));
             }
         } catch (SQLException e) {
