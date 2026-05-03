@@ -521,7 +521,7 @@ public class Prog4 {
                 // then we connect to message
                 "JOIN orvik.message m ON c.conversationId = m.conversationId " + 
                 // and finally we connect to feedback
-                "JOIN orvik.feedback f ON m.messageId = f.messageId " +
+                "LEFT JOIN orvik.feedback f ON m.messageId = f.messageId " +
             // sort by the personaId and name (since we print name)
             "GROUP BY p.personaId, p.name " + 
             // descending order of average ratings
