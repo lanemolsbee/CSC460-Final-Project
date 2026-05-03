@@ -115,6 +115,10 @@ public class Prog4 {
     private static void loopMechanism(Connection conn) {
         // Boolean for loop control
         Boolean loopRun = true;
+        // Help String
+        String help = "Enter 'exit' to exit the program, 'help' to repeat "+
+            "this message, 'functionalities <1/2>' for functionality options,"+
+            " and 'queries' for query options.";
         // Scanner for user input
         Scanner input = new Scanner(System.in);
         // String for current user query
@@ -122,7 +126,7 @@ public class Prog4 {
 
         // SHOW OPTIONS
         System.out.println("");
-        System.out.println("Enter 'exit' to exit the program, 'functionalities <1/2>' for functionality options, and 'queries' for query options.");
+        System.out.println(help);
         System.out.println("");
 
         while (loopRun == true) {
@@ -132,6 +136,8 @@ public class Prog4 {
 
             if (query.contentEquals("exit"))
                 loopRun = false;
+            else if (query.contentEquals("help"))
+                System.out.println(help);
             else if (query.contentEquals("functionalities 1"))
                 printFunctionalities(1);
             else if (query.contentEquals("functionalities 2"))
@@ -255,7 +261,9 @@ public class Prog4 {
     |   Method queryToAction(String query, Connection conn)
     |
     |   Purpose: Processes strings sent by user and sends them on their way to
-    |            the right method.
+    |            the right method, doing input checking as necessary (calling
+    |            isViable to assure Strings that are supposed to be ints and 
+    |            doubles can be safely converted).
     |
     |
     |   Pre-Condition: conn contains a viable Database connection.
@@ -269,7 +277,7 @@ public class Prog4 {
     |   Returns: void
     |
     |   Author: Annabelle Jonatan
-    |   Extra background: I'm sorry this looks so spaghetti at first glance.
+    |   Extra background: I'm sorry this looks so spaghetti.
     *------------------------------------------------------------------------*/
     private static void queryToAction(String query, Connection conn) {
         // Temporary variables for storing query results
@@ -379,7 +387,72 @@ public class Prog4 {
                 return;
             }
         }
-
+        // Persona
+        else if ((split[0].contentEquals("persona.create")) && (split.length == 3)) {
+            iRes = createPersona(conn, split[1], split[2]);
+            if (iRes != -1)
+                System.out.println("PERSONA ADDED HAS PERSONAID: " + iRes);
+            return;
+        } else if ((split[0].contentEquals("persona.delete")) && (split.length == 2)) {
+            if (isViable(split[1], "int")) {
+                if (deletePersona(conn, Integer.parseInt(split[1])))
+                    System.out.println("PERSONA HAS BEEN DELETED");
+                return;
+            }
+        }
+        // Template
+        else if ((split[0].contentEquals("template.create")) && (split.length == 5)) {
+            if ((isViable(split[3], "int")) && (isViable(split[4], "int"))) {
+                iRes = addPromptTemplate(conn, split[1], split[2], Integer.parseInt(split[3]), Integer.parseInt(split[4]));
+                if (iRes != -1)
+                    System.out.println("TEMPLATE ADDED HAS TEMPLATEID: " + iRes);
+                return;
+            }
+        } else if ((split[0].contentEquals("template.change")) && (split.length == 4)) {
+            if (isViable(split[1], "int")) {
+                if (updatePromptTemplate(conn, Integer.parseInt(split[1]), split[2], split[3]))
+                    System.out.println("TEMPLATE HAS BEEN UPDATED");
+                return;
+            }
+        }
+        // Subscription
+        else if ((split[0].contentEquals("subscription.change")) && (split.length == 3)) {
+            if ((isViable(split[1], "int")) && (isViable(split[2], "int"))) {
+                if (updateSubscription(conn, Integer.parseInt(split[1]), Integer.parseInt(split[2])))
+                    System.out.println("SUBSCRIPTION HAS BEEN UPDATED");
+                return;
+            }
+        }
+        // Invoice
+        else if ((split[0].contentEquals("invoice.create")) && (split.length == 3)) {
+            if ((isViable(split[1], "int")) && (isViable(split[2], "double"))) {
+                iRes = newInvoice(conn, Integer.parseInt(split[1]), Double.parseDouble(split[2]));
+                if (iRes != -1)
+                    System.out.println("INVOICE ADDED HAS INVOICEID: " + iRes);
+                return;
+            }
+        } else if ((split[0].contentEquals("invoice.pay")) && (split.length == 2)) {
+            if (isViable(split[1], "int")) {
+                if (paidBill(conn, Integer.parseInt(split[1])))
+                    System.out.println("INVOICE HAS BEEN PAID");
+                return;
+            }
+        }
+        // Ticket
+        else if ((split[0].contentEquals("ticket.open")) && (split.length == 4)) {
+            if ((isViable(split[1], "int")) && (isViable(split[2], "int"))) {
+                iRes = openTicket(conn, Integer.parseInt(split[1]), Integer.parseInt(split[2]), split[3]);
+                if (iRes != -1)
+                    System.out.println("TICKET ADDED HAS TICKETID: " + iRes);
+                return;
+            }
+        } else if ((split[0].contentEquals("ticket.close")) && (split.length == 3)) {
+            if ((isViable(split[1], "int")) && (isViable(split[2], "int"))) {
+                if (closeTicket(conn, Integer.parseInt(split[1]), Integer.parseInt(split[2])))
+                    System.out.println("TICKET HAS BEEN CLOSED");
+                return;
+            }
+        }
 
         // If it matches none of them, print an error and move on
         System.out.println("ERROR: INCORRECT SYNTAX OR QUERY.");
@@ -1045,7 +1118,8 @@ public class Prog4 {
     |       rating -- The integer representing the rating of the message.
     |       feedback -- The string representing the feedback of the message.
     |
-    |   Returns: The ID of the new message such that it can be referenced later.
+    |   Returns: This returns true if the table was successfully updated
+    |            and false otherwise.
     *------------------------------------------------------------------------*/
     private static boolean updateMsgFeedback(Connection conn, int messageID, int rating, String feedback) {
 
@@ -1624,7 +1698,8 @@ public class Prog4 {
     |                 in some way.
     |       tierID -- The tier that we will update the user to.
     |
-    |   Returns: The ID of the new persona such that it can be referenced later.
+    |   Returns: This returns true if the table was successfully updated
+    |            and false otherwise.
     *------------------------------------------------------------------------*/
     private static boolean updateSubscription(Connection conn, int userID, int tierID) {
 
