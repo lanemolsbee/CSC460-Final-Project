@@ -37,7 +37,7 @@ public class Prog4 {
     private static void connector(String username, String password) {
         // INITIALIZE (including all DB stuff)
         System.out.println("");
-        System.out.println("PLACEHOLDER WELCOME MESSAGE: DATABASE LOADING...");
+        System.out.println("WELCOME TO OUR PROJECT 4 PROGRAM: DATABASE LOADING...");
 
         // Magic lectura -> aloe access spell
         // change this depending on team verdict of hardcoding this
@@ -122,7 +122,7 @@ public class Prog4 {
 
         // SHOW OPTIONS
         System.out.println("");
-        System.out.println("Enter 'exit' to exit the program, 'functionalities' for functionality options, and 'queries' for query options.");
+        System.out.println("Enter 'exit' to exit the program, 'functionalities <1/2>' for functionality options, and 'queries' for query options.");
         System.out.println("");
 
         while (loopRun == true) {
@@ -172,7 +172,7 @@ public class Prog4 {
             System.out.println("FUNCTIONALITIES 1:");
             System.out.println("   USER...");
             System.out.println("      create user: 'user.create <string NAME> <string EMAIL> <string LANGUAGE> <int TIER>'");
-            System.out.println("      change user information: 'user.change <int USERID> <'name'/'email'/'language'/'tierId'> <string NEW VALUE> <int NEW TIER>'")
+            System.out.println("      change user information: 'user.change <int USERID> <'name'/'email'/'language'/'tierId'> <string NEW VALUE> <int NEW TIER>'");
             System.out.println("      delete user: 'user.delete <int USERID>'");
             System.out.println("   CONVERSATION...");
             System.out.println("      create convo: 'convo.create <int USERID> <int PERSONAID> <int WORKSPACEID> <string TITLE>'");
@@ -271,8 +271,7 @@ public class Prog4 {
     |   Author: Annabelle Jonatan
     |   Extra background: I'm sorry this looks so spaghetti at first glance.
     *------------------------------------------------------------------------*/
-    private static void queryToAction(String query, Connection conn) 
-    {
+    private static void queryToAction(String query, Connection conn) {
         // Temporary variables for storing query results
         int iRes = 0;
         // Split for processing the query and its parameters
@@ -289,10 +288,10 @@ public class Prog4 {
                 return;
             }
         } else if ((split[0].contentEquals("query2")) && (split.length == 1)) {
-            query2(Integer.parseInt(split[1]), conn);
+            query2(conn);
             return;
         } else if ((split[0].contentEquals("query3")) && (split.length == 1)) {
-            query3(Integer.parseInt(split[1]), conn);
+            query3(conn);
             return;
         } else if ((split[0].contentEquals("query4")) && (split.length == 2)) {
             if (isViable(split[1], "int")) {
@@ -318,8 +317,8 @@ public class Prog4 {
         } else if ((split[0].contentEquals("user.delete")) && (split.length == 2)) {
             if (isViable(split[1], "int")) {
                 // When deleting a User, delete their messages too!
-                if (deleteUserMessages(Integer.parseInt(split[1]))) {
-                    if (deleteUser(Integer.parseInt(split[1])))
+                if (deleteUserMessages(conn, Integer.parseInt(split[1]))) {
+                    if (deleteUser(conn, Integer.parseInt(split[1])))
                         System.out.println("USER HAS BEEN DELETED");
                 }
                 return;
@@ -336,7 +335,7 @@ public class Prog4 {
         } else if ((split[0].contentEquals("convo.add")) && (split.length == 3)) {
             if (isViable(split[1], "int")) {
                 // Check if within limit before attempting to add a message
-                if (withinLimit(Integer.parseInt(split[1]))) {
+                if (withinLimit(conn, Integer.parseInt(split[1]))) {
                     iRes = addMessageToConvo(conn, Integer.parseInt(split[1]), split[2]);
                     if (iRes != -1)
                         System.out.println("MESSAGE ADDED HAS MESSAGEID: " + iRes);
@@ -347,9 +346,8 @@ public class Prog4 {
             }
         } else if ((split[0].contentEquals("convo.feedback")) && (split.length == 4)) {
             if ((isViable(split[1], "int")) && (isViable(split[2], "int"))) {
-                iRes = updateMsgFeedback(conn, Integer.parseInt(split[1]), Integer.parseInt(split[2]), split[3]);
-                if (iRes != -1)
-                    System.out.println("MESSAGE GIVEN FEEDBACK HAS MESSAGEID: " + iRes);
+                if (updateMsgFeedback(conn, Integer.parseInt(split[1]), Integer.parseInt(split[2]), split[3]))
+                    System.out.println("MESSAGE FEEDBACK HAS BEEN UPDATED");
                 return;
             }
         } 
@@ -415,7 +413,7 @@ public class Prog4 {
     |                     code I've written, particularly for CSC 436, so I 
     |                     defaulted to using that here. 
     *------------------------------------------------------------------------*/
-    public static void query1(int userId, Connection conn) {
+    private static void query1(int userId, Connection conn) {
         try {
             // Long query here - this will join these three components like messageID,
             // conversationID, and timeStamp
@@ -459,7 +457,7 @@ public class Prog4 {
     |   
     |   Author: Annabelle Jonatan
     *------------------------------------------------------------------------*/
-    public static void query2(Connection conn) {
+    private static void query2(Connection conn) {
         try {
             // Long query that joins user, conversation and invoice and returns the
             // email, amount owed and most recent conversation date for all outstanding
@@ -468,10 +466,15 @@ public class Prog4 {
             "FROM orvik.users JOIN orvik.invoice USING (userId) JOIN orvik.conversation "+
             "USING (userId) WHERE status='UNPAID' AND orvik.conversation.creationDate IN "+
             "(SELECT max(orvik.conversation.creationDate) as maxDate FROM orvik.users "+
-            "JOIN orvik.conversation USING (userId) GROUP BY userId);";
+            "JOIN orvik.conversation USING (userId) GROUP BY userId)";
+
+            Statement stmt = null;
+            ResultSet rs = null;
 
             // No need for PreparedStatement due to no User input.
-            ResultSet rs = stmt.executeQuery();
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(queryString);
+
             System.out.println("All outstanding invoices are:");
             while (rs.next()) {
                 System.out.println(rs.getString("email") + " " + rs.getInt("amount") + " "
@@ -505,7 +508,7 @@ public class Prog4 {
     |
     |   Returns: void
     *------------------------------------------------------------------------*/
-    public static void query3(Connection conn) {
+    private static void query3(Connection conn) {
         try {
             String sqlStatement = "SELECT p.name as personaName, " +
             // f.rating is either 1 or 0?? 
@@ -577,7 +580,7 @@ public class Prog4 {
     |                     code I've written, particularly for CSC 436, so I 
     |                     defaulted to using that here. 
     *------------------------------------------------------------------------*/
-    public static void query4(int userId, Connection con) {
+    private static void query4(int userId, Connection con) {
         try {
             String query = " SELECT c.title, AVG(f.rating) AS avg_rating " +
                     "FROM orvik.conversation c " +
@@ -639,7 +642,7 @@ public class Prog4 {
     |            is returned (userId). Also, this new user is 
     |            inserted into the Users table.
     *------------------------------------------------------------------------*/
-    public int addUser(Connection conn, String name, String email, String language, int tierID) {
+    private static int addUser(Connection conn, String name, String email, String language, int tierID) {
         String sqlStatement = "INSERT INTO orvik.Users (userId, name, email, creationDate, language, tierId) VALUES (Users_seq.nextval, ?, ?, ?, ?, ?)";
         try {
             String[] generatedCols = { "userId" };
@@ -718,7 +721,7 @@ public class Prog4 {
     |            row of the Users table. If the toUpdate value is invalid
     |            or the value cannot be changed, false is returned.
     *------------------------------------------------------------------------*/
-    public boolean updateUser(Connection conn, int userID, String toUpdate, String changeStr, int newTier) {
+    private static boolean updateUser(Connection conn, int userID, String toUpdate, String changeStr, int newTier) {
         // if toUpdate is "name"
         if (toUpdate.equals("name")) {
             // sql statement to change the name with the specific userId
@@ -823,7 +826,7 @@ public class Prog4 {
     |            conditions and has been removed, true is returned. 
     |            Otherwise, false is returned.
     *------------------------------------------------------------------------*/
-    public boolean deleteUser(Connection conn, int userID) {
+    private static boolean deleteUser(Connection conn, int userID) {
 
         // First condition! User cannot have any unpaid invoices
         // create sql statement to get number of unpaid invoices for the user
@@ -930,7 +933,7 @@ public class Prog4 {
     |   Returns: The ID of the new conversation such that it can be referenced
     |            later.
     *------------------------------------------------------------------------*/
-    public int newConvo(Connection conn, int userID, int personaID, int workspaceID, String title) {
+    private static int newConvo(Connection conn, int userID, int personaID, int workspaceID, String title) {
         // Note the prepared statement syntax as well as the use of a sequence to minimize Java PRNG collsions.
         String sqlStatement = "INSERT INTO orvik.conversation (conversationId, userId, title, creationDate, personaId, workspaceId) VALUES (convo_seq.nextval, ?, ?, ?, ?, ?)";
         try {
@@ -988,7 +991,7 @@ public class Prog4 {
     |
     |   Returns: The ID of the new message such that it can be referenced later.
     *------------------------------------------------------------------------*/
-    public int addMessageToConvo(Connection conn, int convoID, String message) {
+    private static int addMessageToConvo(Connection conn, int convoID, String message) {
 
         // See the comments in newConvo, these are barely any different.
         String sqlStatement = "INSERT INTO orvik.message (messageId, conversationId, role, content, timestamp) VALUES (message_seq.nextval, ?, ?, ?, ?)";
@@ -1044,7 +1047,7 @@ public class Prog4 {
     |
     |   Returns: The ID of the new message such that it can be referenced later.
     *------------------------------------------------------------------------*/
-    public boolean updateMsgFeedback(Connection conn, int messageID, int rating, String feedback) {
+    private static boolean updateMsgFeedback(Connection conn, int messageID, int rating, String feedback) {
 
         // see above inline comments.
         String sqlStatement = "INSERT INTO orvik.feedback (messageId, rating, feedback) VALUES (?, ?, ?)";
@@ -1085,7 +1088,7 @@ public class Prog4 {
     |   Returns:  A boolean representing whether or not the deletion was
     |             successful.
     *------------------------------------------------------------------------*/
-    public boolean deleteUserMessages(Connection conn, int userID) {
+    private static boolean deleteUserMessages(Connection conn, int userID) {
 
         // Delete the entries where the userID matches.
         String sqlStatement = "DELETE FROM orvik.message WHERE conversationId IN (SELECT conversationId FROM orvik.conversation WHERE userId = ?)";
@@ -1138,7 +1141,7 @@ public class Prog4 {
     |            is returned (workspaceId). Also, this workspace is 
     |            inserted into the workspace table.
     *------------------------------------------------------------------------*/
-    public int createWorkspace(Connection conn, int userID, String name) {
+    private static int createWorkspace(Connection conn, int userID, String name) {
         // sql statement for creating a new workspace
         String sqlStatement = "INSERT INTO orvik.workspace (workspaceId, name) VALUES (workspace_seq.nextval, ?)";
         try {
@@ -1195,7 +1198,7 @@ public class Prog4 {
     |   Returns: A boolean representing whether or not the deletion was
     |            successful.
     *------------------------------------------------------------------------*/
-    public boolean createMembership(Connection conn, int userID, int workspaceID) {
+    private static boolean createMembership(Connection conn, int userID, int workspaceID) {
         // sql statement to create a new workspace membership
         // this is a connection between user and workspace
         String sqlStatement = "INSERT INTO orvik.workspaceMembership (userId, workspaceId) VALUES (?, ?)";
@@ -1246,7 +1249,7 @@ public class Prog4 {
     |            was successfully changed to the parameter newName. If there
     |            were any issues in sql, false is returned.
     *------------------------------------------------------------------------*/
-    public boolean changeWorkspaceName(Connection conn, int workspaceID, String newName) {
+    private static boolean changeWorkspaceName(Connection conn, int workspaceID, String newName) {
         // sql statement to change workspace name
         String sqlStatement = "UPDATE orvik.workspace SET name = ? WHERE workspaceId = ?";
         try {
@@ -1304,7 +1307,7 @@ public class Prog4 {
     |            conversation is returned (conversationId). Also, this 
     |            conversation is inserted into the convo table.
     *------------------------------------------------------------------------*/
-    public int addWorkspaceConvo(Connection conn, int userID, int personaID, int workspaceID, String title) {
+    private static int addWorkspaceConvo(Connection conn, int userID, int personaID, int workspaceID, String title) {
         // sql statement to get items in workspaceMembership with specific userId and
         // workspaceId
         String belongs = "SELECT COUNT(*) FROM orvik.workspaceMembership WHERE workspaceId = ? AND userId = ?";
@@ -1362,7 +1365,7 @@ public class Prog4 {
     |
     |   Returns: The ID of the new persona such that it can be referenced later.
     *------------------------------------------------------------------------*/
-    public int createPersona(Connection conn, String name, String directive) {
+    private static int createPersona(Connection conn, String name, String directive) {
 
         // see newConvo's comments, they're almost identical to this.
         String sqlStatement = "INSERT INTO orvik.persona (personaId, name, instructions) VALUES (persona_seq.nextval, ?, ?)";
@@ -1406,7 +1409,7 @@ public class Prog4 {
     |
     |   Returns: A boolean representing whether or not the deletion was successful.
     *------------------------------------------------------------------------*/
-    public boolean deletePersona(Connection conn, int personaID) {
+    private static boolean deletePersona(Connection conn, int personaID) {
 
         // If we have a persona with more than 5 conversations, we can't delete it.
         String countStatement = "SELECT COUNT(*) FROM orvik.conversation WHERE personaId = ?";
@@ -1479,7 +1482,7 @@ public class Prog4 {
     |            is returned (templateId). Also, this new template is 
     |            inserted into the template table.
     *------------------------------------------------------------------------*/
-    public int addPromptTemplate(Connection conn, String title, String content, int userID, int workspaceID) {
+    private static int addPromptTemplate(Connection conn, String title, String content, int userID, int workspaceID) {
         String sqlStatement = "INSERT INTO orvik.promptTemplate (templateId, title, content, userId, workspaceId) VALUES (promptTemplate_seq.nextval, ?, ?, ?, ?)";
         try {
             String[] generatedCols = { "templateId" };
@@ -1549,7 +1552,7 @@ public class Prog4 {
     |            and false otherwise. If the toUpdate string is not
     |            "title" or "content", then false is automatically returned.
     *------------------------------------------------------------------------*/
-    public boolean updatePromptTemplate(Connection conn, int templateID, String toUpdate, String changeStr) {
+    private static boolean updatePromptTemplate(Connection conn, int templateID, String toUpdate, String changeStr) {
         // if we want to update the prompt template title
         if (toUpdate.equals("title")) {
             // sql statement for changing the title
@@ -1623,7 +1626,7 @@ public class Prog4 {
     |
     |   Returns: The ID of the new persona such that it can be referenced later.
     *------------------------------------------------------------------------*/
-    public boolean updateSubscription(Connection conn, int userID, int tierID) {
+    private static boolean updateSubscription(Connection conn, int userID, int tierID) {
 
         // Uses an UPDATE statement instead of an INSERT.
         String sqlStatement = "UPDATE orvik.Users SET tierId = ? WHERE userId = ?";
@@ -1665,7 +1668,7 @@ public class Prog4 {
     |   Returns: A boolean representing whether or not the user is within their
     |            limit or not.
     *------------------------------------------------------------------------*/
-    public boolean withinLimit(Connection conn, int userID) {
+    private static boolean withinLimit(Connection conn, int userID) {
         // Takes the number of messages a user has sent and their message limit
         // and joins it with the user table
         // and the membership tier table
@@ -1725,7 +1728,7 @@ public class Prog4 {
     |            returned (invoiceId). Also, this new invoice is 
     |            inserted into the invoice table. 
     *------------------------------------------------------------------------*/
-    public int newInvoice(Connection conn, int userID, double amount) {
+    private static int newInvoice(Connection conn, int userID, double amount) {
         // sql statement to add new invoice to table
         String sqlStatement = "INSERT INTO orvik.invoice (invoiceId, userId, amount, invoiceDate, status) VALUES (invoice_seq.nextval, ?, ?, ?, ?)";
         try {
@@ -1784,7 +1787,7 @@ public class Prog4 {
     |            "PAID". If this is not able to happen, false is 
     |            returned by the method.
     *------------------------------------------------------------------------*/
-    public boolean paidBill(Connection conn, int invoiceID) {
+    private static boolean paidBill(Connection conn, int invoiceID) {
         // statement to update invoice status to "PAID"
         String sqlStatement = "UPDATE orvik.invoice SET status = ? WHERE invoiceId = ?";
         try {
@@ -1830,7 +1833,7 @@ public class Prog4 {
     |
     |   Returns: The ID of the ticket such that it can be referenced later.
     *------------------------------------------------------------------------*/
-    public int openTicket(Connection conn, int userID, int agentID, String topic) {
+    private static int openTicket(Connection conn, int userID, int agentID, String topic) {
         String sqlStatement = "INSERT INTO orvik.supportTicket (ticketId, userId, agentId, topic, duration, outcome) VALUES (ticket_seq.nextval, ?, ?, ?, ?, ?)";
         try {
             String[] generatedCols = { "ticketId" };
@@ -1882,7 +1885,7 @@ public class Prog4 {
     |
     |   Returns: A boolean which identifies whether the ticket was successfully closed.
     *------------------------------------------------------------------------*/
-    public boolean closeTicket(Connection conn, int ticketID, int duration) {
+    private static boolean closeTicket(Connection conn, int ticketID, int duration) {
         String sqlStatement = "UPDATE orvik.ticket SET outcome = ?, duration = ? WHERE ticketId = ?";
         try {
             PreparedStatement stmt = conn.prepareStatement(sqlStatement);
@@ -1921,7 +1924,7 @@ public class Prog4 {
     |
     |   Author: Annabelle Jonatan
     *------------------------------------------------------------------------*/
-    private boolean isViable(String num, String doubOrInt)
+    private static boolean isViable(String num, String doubOrInt)
     {
         if (doubOrInt.contentEquals("double")) {
             // Try-catch convert the String num to an int
