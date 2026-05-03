@@ -21,7 +21,7 @@ public class Prog4 {
     |            close the JDBC connection when the loop ends.
     |
     |
-    |   Pre-Condition: N/A
+    |   Pre-Condition: None
     |
     |   Post-Condition: That Oracle has been connected to and, when the
     |                   function is complete, the connection is closed.
@@ -32,7 +32,7 @@ public class Prog4 {
     |
     |   Returns: void
     |
-    |   Author: Jordan Orvik, Annabelle Jonatan
+    |   Author: Annabelle Jonatan, Jordan Orvik (password verification)
     *------------------------------------------------------------------------*/
     private static void connector(String username, String password) {
         // INITIALIZE (including all DB stuff)
@@ -115,6 +115,8 @@ public class Prog4 {
     private static void loopMechanism(Connection conn) {
         // Boolean for loop control
         Boolean loopRun = true;
+        // Int for printing hints if too many syntax errors from user
+        int numFails = 0;
         // Help String
         String help = "Enter 'exit' to exit the program, 'help' to repeat "+
             "this message, 'functionalities <1/2>' for functionality options,"+
@@ -145,7 +147,7 @@ public class Prog4 {
             else if (query.contentEquals("queries"))
                 printQueries();
             else
-                queryToAction(query, conn);
+                numFails = queryToAction(query, conn, numFails);
             System.out.println("");
         }
         System.out.println("");
@@ -272,14 +274,17 @@ public class Prog4 {
     |                   and the results printed.
     |
     |
-    |   Params: query (the user input), conn (the DB connection).
+    |   Params: query (the user input), conn (the DB connection), numFails (
+    |           number of times the user has made a syntax error; extra silly
+    |           bit that will print a hint if you fail too many times).
     |
-    |   Returns: void
+    |   Returns: An int representing the number of "failures" from the user
+    |            (ie. count of syntax failures); handles printing the hint.
     |
     |   Author: Annabelle Jonatan
     |   Extra background: I'm sorry this looks so spaghetti.
     *------------------------------------------------------------------------*/
-    private static void queryToAction(String query, Connection conn) {
+    private static int queryToAction(String query, Connection conn, int numFails) {
         // Temporary variables for storing query results
         int iRes = 0;
         // Split for processing the query and its parameters
@@ -293,18 +298,18 @@ public class Prog4 {
             // Checks if user supplied num is a valid int
             if (isViable(split[1], "int")) {
                 query1(Integer.parseInt(split[1]), conn);
-                return;
+                return numFails;
             }
         } else if ((split[0].contentEquals("query2")) && (split.length == 1)) {
             query2(conn);
-            return;
+            return numFails;
         } else if ((split[0].contentEquals("query3")) && (split.length == 1)) {
             query3(conn);
-            return;
+            return numFails;
         } else if ((split[0].contentEquals("query4")) && (split.length == 2)) {
             if (isViable(split[1], "int")) {
                 query4(Integer.parseInt(split[1]), conn);
-                return;
+                return numFails;
             }
         }
         // FUNCTIONALITIES
@@ -314,13 +319,16 @@ public class Prog4 {
                 iRes = addUser(conn, split[1], split[2], split[3], Integer.parseInt(split[4]));
                 if (iRes != -1)
                     System.out.println("USER ADDED HAS USERID: " + iRes);
-                return;
+                // Return within isViable as, if NOT viable, should cycle to end of all the
+                // else-ifs to print a UI syntax error. Individual Functionality methods handle
+                // their own sanity checking past isViable and print their own errors
+                return numFails;
             }
         } else if ((split[0].contentEquals("user.change")) && (split.length == 5)) {
             if ((isViable(split[1], "int")) && (isViable(split[4], "int"))) {
                 if (updateUser(conn, Integer.parseInt(split[1]), split[2], split[3], Integer.parseInt(split[4])))
                     System.out.println("USER HAS BEEN UPDATED");
-                return;
+                return numFails;
             }
         } else if ((split[0].contentEquals("user.delete")) && (split.length == 2)) {
             if (isViable(split[1], "int")) {
@@ -329,7 +337,7 @@ public class Prog4 {
                     if (deleteUser(conn, Integer.parseInt(split[1])))
                         System.out.println("USER HAS BEEN DELETED");
                 }
-                return;
+                return numFails;
             }
         } 
         // Conversation
@@ -338,7 +346,7 @@ public class Prog4 {
                 iRes = newConvo(conn, Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]), split[4]);
                 if (iRes != -1)
                     System.out.println("CONVERSATION ADDED HAS CONVOID: " + iRes);
-                return;
+                return numFails;
             }
         } else if ((split[0].contentEquals("convo.add")) && (split.length == 3)) {
             if (isViable(split[1], "int")) {
@@ -350,13 +358,13 @@ public class Prog4 {
                 } else {
                     System.out.println("ERROR! USER IS NOT WITHIN MESSAGE LIMIT");
                 }
-                return;
+                return numFails;
             }
         } else if ((split[0].contentEquals("convo.feedback")) && (split.length == 4)) {
             if ((isViable(split[1], "int")) && (isViable(split[2], "int"))) {
                 if (updateMsgFeedback(conn, Integer.parseInt(split[1]), Integer.parseInt(split[2]), split[3]))
                     System.out.println("MESSAGE FEEDBACK HAS BEEN UPDATED");
-                return;
+                return numFails;
             }
         } 
         // Workspace
@@ -365,39 +373,40 @@ public class Prog4 {
                 iRes = createWorkspace(conn, Integer.parseInt(split[1]), split[2]);
                 if (iRes != -1)
                     System.out.println("WORKSPACE ADDED HAS WORKSPACEID: " + iRes);
-                return;
+                return numFails;
             }
         } else if ((split[0].contentEquals("workspace.member")) && (split.length == 3)) {
             if ((isViable(split[1], "int")) && (isViable(split[2], "int"))) {
                 if (createMembership(conn, Integer.parseInt(split[1]), Integer.parseInt(split[2])))
                     System.out.println("MEMBERSHIP ADDED");
-                return;
+                return numFails;
             }
         } else if ((split[0].contentEquals("workspace.change")) && (split.length == 3)) {
             if (isViable(split[1], "int")) {
                 if (changeWorkspaceName(conn, Integer.parseInt(split[1]), split[2]))
                     System.out.println("WORKSPACE NAME CHANGED");
-                return;
+                return numFails;
             }
         } else if ((split[0].contentEquals("workspace.add")) && (split.length == 5)) {
             if ((isViable(split[1], "int")) && (isViable(split[2], "int")) && (isViable(split[3], "int"))) {
                 iRes = addWorkspaceConvo(conn, Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]), split[4]);
                 if (iRes != -1)
                     System.out.println("CONVERSATION ADDED HAS CONVOID: " + iRes);
-                return;
+                return numFails;
             }
         }
         // Persona
         else if ((split[0].contentEquals("persona.create")) && (split.length == 3)) {
+            // Persona creation is our only case of a functionality w/ all Strings; no isViable needed
             iRes = createPersona(conn, split[1], split[2]);
             if (iRes != -1)
                 System.out.println("PERSONA ADDED HAS PERSONAID: " + iRes);
-            return;
+            return numFails;
         } else if ((split[0].contentEquals("persona.delete")) && (split.length == 2)) {
             if (isViable(split[1], "int")) {
                 if (deletePersona(conn, Integer.parseInt(split[1])))
                     System.out.println("PERSONA HAS BEEN DELETED");
-                return;
+                return numFails;
             }
         }
         // Template
@@ -406,13 +415,13 @@ public class Prog4 {
                 iRes = addPromptTemplate(conn, split[1], split[2], Integer.parseInt(split[3]), Integer.parseInt(split[4]));
                 if (iRes != -1)
                     System.out.println("TEMPLATE ADDED HAS TEMPLATEID: " + iRes);
-                return;
+                return numFails;
             }
         } else if ((split[0].contentEquals("template.change")) && (split.length == 4)) {
             if (isViable(split[1], "int")) {
                 if (updatePromptTemplate(conn, Integer.parseInt(split[1]), split[2], split[3]))
                     System.out.println("TEMPLATE HAS BEEN UPDATED");
-                return;
+                return numFails;
             }
         }
         // Subscription
@@ -420,22 +429,23 @@ public class Prog4 {
             if ((isViable(split[1], "int")) && (isViable(split[2], "int"))) {
                 if (updateSubscription(conn, Integer.parseInt(split[1]), Integer.parseInt(split[2])))
                     System.out.println("SUBSCRIPTION HAS BEEN UPDATED");
-                return;
+                return numFails;
             }
         }
         // Invoice
         else if ((split[0].contentEquals("invoice.create")) && (split.length == 3)) {
+            // Invoice creation is our only case of a double instead of an int; call isViable with double
             if ((isViable(split[1], "int")) && (isViable(split[2], "double"))) {
                 iRes = newInvoice(conn, Integer.parseInt(split[1]), Double.parseDouble(split[2]));
                 if (iRes != -1)
                     System.out.println("INVOICE ADDED HAS INVOICEID: " + iRes);
-                return;
+                return numFails;
             }
         } else if ((split[0].contentEquals("invoice.pay")) && (split.length == 2)) {
             if (isViable(split[1], "int")) {
                 if (paidBill(conn, Integer.parseInt(split[1])))
                     System.out.println("INVOICE HAS BEEN PAID");
-                return;
+                return numFails;
             }
         }
         // Ticket
@@ -444,18 +454,28 @@ public class Prog4 {
                 iRes = openTicket(conn, Integer.parseInt(split[1]), Integer.parseInt(split[2]), split[3]);
                 if (iRes != -1)
                     System.out.println("TICKET ADDED HAS TICKETID: " + iRes);
-                return;
+                return numFails;
             }
         } else if ((split[0].contentEquals("ticket.close")) && (split.length == 3)) {
             if ((isViable(split[1], "int")) && (isViable(split[2], "int"))) {
                 if (closeTicket(conn, Integer.parseInt(split[1]), Integer.parseInt(split[2])))
                     System.out.println("TICKET HAS BEEN CLOSED");
-                return;
+                return numFails;
             }
         }
 
-        // If it matches none of them, print an error and move on
+        // If it matches none of them, print a UI syntax error and handle accordingly
         System.out.println("ERROR: INCORRECT SYNTAX OR QUERY.");
+        numFails++;
+        if (numFails > 2)
+        {
+            System.out.println("   HINT: CONSULT HELP MENUES FOR CORRECT SYNTAX.");
+            System.out.println("   (PLEASE TYPE 'help' FOR MORE INFORMATION!)");
+            // Resets to 0 so the hint has a cooldown
+            return 0;
+        }
+        // If not yet at 3, return the incremented numFails
+        return numFails;
     }
 
 
