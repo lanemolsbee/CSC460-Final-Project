@@ -275,7 +275,6 @@ public class Prog4 {
     {
         // Temporary variables for storing query results
         int iRes = 0;
-        boolean bRes = true;
         // Split for processing the query and its parameters
         String[] split = query.split(" ");
 
@@ -302,21 +301,23 @@ public class Prog4 {
             }
         }
         // FUNCTIONALITIES
-        else if ((split[0].contentEquals("user.create")) && (split.length == 4)) {
+        // User
+        else if ((split[0].contentEquals("user.create")) && (split.length == 5)) {
             if (isViable(split[4], "int")) {
                 iRes = addUser(conn, split[1], split[2], split[3], Integer.parseInt(split[4]));
                 if (iRes != -1)
                     System.out.println("USER ADDED HAS USERID: " + iRes);
                 return;
             }
-        } else if ((split[0].contentEquals("user.change")) && (split.length == 4)) {
+        } else if ((split[0].contentEquals("user.change")) && (split.length == 5)) {
             if ((isViable(split[1], "int")) && (isViable(split[4], "int"))) {
                 if (updateUser(conn, Integer.parseInt(split[1]), split[2], split[3], Integer.parseInt(split[4])))
                     System.out.println("USER HAS BEEN UPDATED");
                 return;
             }
-        } else if ((split[0].contentEquals("user.delete")) && (split.length == 1)) {
+        } else if ((split[0].contentEquals("user.delete")) && (split.length == 2)) {
             if (isViable(split[1], "int")) {
+                // When deleting a User, delete their messages too!
                 if (deleteUserMessages(Integer.parseInt(split[1]))) {
                     if (deleteUser(Integer.parseInt(split[1])))
                         System.out.println("USER HAS BEEN DELETED");
@@ -324,6 +325,64 @@ public class Prog4 {
                 return;
             }
         } 
+        // Conversation
+        else if ((split[0].contentEquals("convo.create")) && (split.length == 5)) {
+            if ((isViable(split[1], "int")) && (isViable(split[2], "int")) && (isViable(split[3], "int"))) {
+                iRes = newConvo(conn, Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]), split[4]);
+                if (iRes != -1)
+                    System.out.println("CONVERSATION ADDED HAS CONVOID: " + iRes);
+                return;
+            }
+        } else if ((split[0].contentEquals("convo.add")) && (split.length == 3)) {
+            if (isViable(split[1], "int")) {
+                // Check if within limit before attempting to add a message
+                if (withinLimit(Integer.parseInt(split[1]))) {
+                    iRes = addMessageToConvo(conn, Integer.parseInt(split[1]), split[2]);
+                    if (iRes != -1)
+                        System.out.println("MESSAGE ADDED HAS MESSAGEID: " + iRes);
+                } else {
+                    System.out.println("ERROR! USER IS NOT WITHIN MESSAGE LIMIT");
+                }
+                return;
+            }
+        } else if ((split[0].contentEquals("convo.feedback")) && (split.length == 4)) {
+            if ((isViable(split[1], "int")) && (isViable(split[2], "int"))) {
+                iRes = updateMsgFeedback(conn, Integer.parseInt(split[1]), Integer.parseInt(split[2]), split[3]);
+                if (iRes != -1)
+                    System.out.println("MESSAGE GIVEN FEEDBACK HAS MESSAGEID: " + iRes);
+                return;
+            }
+        } 
+        // Workspace
+        else if ((split[0].contentEquals("workspace.create")) && (split.length == 3)) {
+            if (isViable(split[1], "int")) {
+                iRes = createWorkspace(conn, Integer.parseInt(split[1]), split[2]);
+                if (iRes != -1)
+                    System.out.println("WORKSPACE ADDED HAS WORKSPACEID: " + iRes);
+                return;
+            }
+        } else if ((split[0].contentEquals("workspace.member")) && (split.length == 3)) {
+            if ((isViable(split[1], "int")) && (isViable(split[2], "int"))) {
+                if (createMembership(conn, Integer.parseInt(split[1]), Integer.parseInt(split[2])))
+                    System.out.println("MEMBERSHIP ADDED");
+                return;
+            }
+        } else if ((split[0].contentEquals("workspace.change")) && (split.length == 3)) {
+            if (isViable(split[1], "int")) {
+                if (changeWorkspaceName(conn, Integer.parseInt(split[1]), split[2]))
+                    System.out.println("WORKSPACE NAME CHANGED");
+                return;
+            }
+        } else if ((split[0].contentEquals("workspace.add")) && (split.length == 5)) {
+            if ((isViable(split[1], "int")) && (isViable(split[2], "int")) && (isViable(split[3], "int"))) {
+                iRes = addWorkspaceConvo(conn, Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]), split[4]);
+                if (iRes != -1)
+                    System.out.println("CONVERSATION ADDED HAS CONVOID: " + iRes);
+                return;
+            }
+        }
+
+
         // If it matches none of them, print an error and move on
         System.out.println("ERROR: INCORRECT SYNTAX OR QUERY.");
     }
@@ -1133,9 +1192,10 @@ public class Prog4 {
     |       workspaceID -- Represents a unique workspace to connect
     |                      to a user.
     |
-    |   Returns: None.
+    |   Returns: A boolean representing whether or not the deletion was
+    |            successful.
     *------------------------------------------------------------------------*/
-    public void createMembership(Connection conn, int userID, int workspaceID) {
+    public boolean createMembership(Connection conn, int userID, int workspaceID) {
         // sql statement to create a new workspace membership
         // this is a connection between user and workspace
         String sqlStatement = "INSERT INTO orvik.workspaceMembership (userId, workspaceId) VALUES (?, ?)";
@@ -1147,10 +1207,11 @@ public class Prog4 {
             stmt.setInt(2, workspaceID);
             stmt.executeUpdate();
             stmt.close();
+            return true;
         } catch (SQLException e) {
             // catch sql exceptions
             System.err.println("Could not create a new workspace membership! : " + e.getMessage());
-            return;
+            return false;
         }
     }
 
