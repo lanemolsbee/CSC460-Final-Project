@@ -510,7 +510,7 @@ public class Prog4 {
     *------------------------------------------------------------------------*/
     private static void query3(Connection conn) {
         try {
-            String sqlStatement = "SELECT p.name as personaName, " +
+            String sqlStatement = "SELECT * FROM (SELECT p.name as personaName, " +
             // f.rating is either 1 or 0?? 
             // so we can take the average and multiply by 100 to get %
                 "ROUND(AVG(f.rating) * 100, 2) as thumbsUpPercent " + 
@@ -525,9 +525,9 @@ public class Prog4 {
             // sort by the personaId and name (since we print name)
             "GROUP BY p.personaId, p.name " + 
             // descending order of average ratings
-            "ORDER BY AVG(f.rating) DESC " +
+            "ORDER BY thumbsUpPercent DESC) " +
             // we only want the first one!
-            "FETCH FIRST 1 ROWS ONLY";
+            "WHERE ROWNUM = 1";
 
             PreparedStatement stmt = conn.prepareStatement(sqlStatement);
             ResultSet rs = stmt.executeQuery();
