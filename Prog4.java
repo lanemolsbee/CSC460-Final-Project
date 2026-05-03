@@ -252,7 +252,7 @@ public class Prog4 {
         System.out.println("      'query4 <int USERID>'");
         System.out.println("~ ~ ~");
         System.out.println("");
-        System.out.println("EXAMPLE: 'query4 3'");
+        System.out.println("EXAMPLE: 'query4 6'");
         System.out.println("");
     }
 
