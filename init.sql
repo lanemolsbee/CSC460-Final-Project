@@ -385,4 +385,13 @@ INSERT INTO feedback VALUES (22, 1, 'Excellent explanation');
 INSERT INTO feedback VALUES (24, 1, 'Very clear');
 INSERT INTO feedback VALUES (8, 1, 'Great breakdown');
 
+GRANT SELECT ON convo_seq TO PUBLIC;
+GRANT SELECT ON message_seq TO PUBLIC;
+GRANT SELECT ON persona_seq TO PUBLIC;
+GRANT SELECT ON ticket_seq TO PUBLIC;
+GRANT SELECT ON Users_seq TO PUBLIC;
+GRANT SELECT ON workspace_seq TO PUBLIC;
+GRANT SELECT ON promptTemplate_seq TO PUBLIC;
+GRANT SELECT ON invoice_seq TO PUBLIC;
+
 COMMIT;
