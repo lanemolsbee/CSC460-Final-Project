@@ -4,7 +4,6 @@ import java.util.*;
 //import java.io.*;
 import java.util.regex.*;
 
-
 public class Prog4 {
     // INTERFACE (Annabelle)
     public static void main(String[] args) {
@@ -16,7 +15,6 @@ public class Prog4 {
         connector(args[0], args[1]);
     }
 
- 
     /*-------------------------------------------------------------------------
     |   Method connector(String username, String password)
     |
@@ -73,7 +71,6 @@ public class Prog4 {
             System.err.println("\tErrorCode: " + e.getErrorCode());
             System.exit(-1);
         }
-        
 
         // Run loop
         loopMechanism(conn);
@@ -94,8 +91,6 @@ public class Prog4 {
         System.out.println("CLOSED SUCCESSFULLY. GOODBYE.");
         System.out.println("");
     }
-
-
 
     /*-------------------------------------------------------------------------
     |   Method loopMechanism(Connection conn)
@@ -123,9 +118,9 @@ public class Prog4 {
         // Int for printing hints if too many syntax errors from user
         int numFails = 0;
         // Help String
-        String help = "Enter 'exit' to exit the program, 'help' to repeat "+
-            "this message, 'functionalities <1/2>' for functionality options,"+
-            " and 'queries' for query options.";
+        String help = "Enter 'exit' to exit the program, 'help' to repeat " +
+                "this message, 'functionalities <1/2>' for functionality options," +
+                " and 'queries' for query options.";
         // Scanner for user input
         Scanner input = new Scanner(System.in);
         // String for current user query
@@ -162,7 +157,6 @@ public class Prog4 {
         input.close();
         System.out.println("EXIT RECEIEVED; CLOSING CONNECTION...");
     }
- 
 
     /*-------------------------------------------------------------------------
     |   Method printFunctionalities(int page)
@@ -187,16 +181,21 @@ public class Prog4 {
             System.out.println("~ ~ ~");
             System.out.println("FUNCTIONALITIES 1:");
             System.out.println("   USER...");
-            System.out.println("      create user: 'user.create <string NAME> <string EMAIL> <string LANGUAGE> <int TIER>'");
-            System.out.println("      change user information: 'user.change <int USERID> <'name'/'email'/'language'/'tierId'> <string NEW VALUE> <int NEW TIER>'");
+            System.out.println(
+                    "      create user: 'user.create <string NAME> <string EMAIL> <string LANGUAGE> <int TIER>'");
+            System.out.println(
+                    "      change user information: 'user.change <int USERID> <'name'/'email'/'language'/'tierId'> <string NEW VALUE> <int NEW TIER>'");
             System.out.println("      delete user: 'user.delete <int USERID>'");
-            System.out.println("   CONVERSATION...");;
+            System.out.println("   CONVERSATION...");
+            ;
             System.out.println("      add msg to convo: 'convo.add <int CONVOID> <string MESSAGE> <int USERID>'");
-            System.out.println("      add feedback to msg: 'convo.feedback <int MESSAGEID> <int RATING> <string FEEDBACK>'");
+            System.out.println(
+                    "      add feedback to msg: 'convo.feedback <int MESSAGEID> <int RATING> <string FEEDBACK>'");
             System.out.println("   WORKSPACE...");
             System.out.println("      create workspace: 'workspace.create <int USERID> <string NAME>'");
             System.out.println("      change workspace name: 'workspace.change <int WORKSPACEID> <string NEW NAME>'");
-            System.out.println("      add convo to workspace: 'workspace.add <int USERID> <int PERSONAID> <int WORKSPACEID> <string TITLE>'");
+            System.out.println(
+                    "      add convo to workspace: 'workspace.add <int USERID> <int PERSONAID> <int WORKSPACEID> <string TITLE>'");
             System.out.println("   PERSONA...");
             System.out.println("      create persona: 'persona.create <string NAME> <string DIRECTIVE>'");
             System.out.println("      delete persona: 'persona.delete <int PERSONAID>'");
@@ -207,8 +206,10 @@ public class Prog4 {
             System.out.println("~ ~ ~");
             System.out.println("FUNCTIONALITIES 2:");
             System.out.println("   TEMPLATE...");
-            System.out.println("      create template: 'template.create <string TITLE> <string CONTENT> <int USERID> <int WORKSPACEID>'");
-            System.out.println("      change template: 'template.change <int TEMPLATEID> <'title'/'content'> <string NEW VALUE>'");
+            System.out.println(
+                    "      create template: 'template.create <string TITLE> <string CONTENT> <int USERID> <int WORKSPACEID>'");
+            System.out.println(
+                    "      change template: 'template.change <int TEMPLATEID> <'title'/'content'> <string NEW VALUE>'");
             System.out.println("   SUBSCRIPTION...");
             System.out.println("      change subscription: 'subscription.change <int USERID> <int NEW TIER>'");
             System.out.println("   INVOICE...");
@@ -223,7 +224,6 @@ public class Prog4 {
         System.out.println("EXAMPLE: 'user.change 2 language mandarin 5' (Note: as language is chosen, 5 is ignored)");
         System.out.println("");
     }
-
 
     /*-------------------------------------------------------------------------
     |   Method printQueries()
@@ -263,7 +263,6 @@ public class Prog4 {
         System.out.println("EXAMPLE: 'query4 1'");
         System.out.println("");
     }
-
 
     /*-------------------------------------------------------------------------
     |   Method queryToAction(String query, Connection conn)
@@ -351,7 +350,7 @@ public class Prog4 {
                 }
                 return numFails;
             }
-        } 
+        }
         // Conversation
         else if ((split[0].contentEquals("convo.add")) && (split.length == 4)) {
             if (isViable(split[1], "int")) {
@@ -371,7 +370,7 @@ public class Prog4 {
                     System.out.println("MESSAGE FEEDBACK HAS BEEN UPDATED");
                 return numFails;
             }
-        } 
+        }
         // Workspace
         else if ((split[0].contentEquals("workspace.create")) && (split.length == 3)) {
             if (isViable(split[1], "int")) {
@@ -388,7 +387,8 @@ public class Prog4 {
             }
         } else if ((split[0].contentEquals("workspace.add")) && (split.length == 5)) {
             if ((isViable(split[1], "int")) && (isViable(split[2], "int")) && (isViable(split[3], "int"))) {
-                iRes = addWorkspaceConvo(conn, Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]), split[4]);
+                iRes = addWorkspaceConvo(conn, Integer.parseInt(split[1]), Integer.parseInt(split[2]),
+                        Integer.parseInt(split[3]), split[4]);
                 if (iRes != -1)
                     System.out.println("CONVERSATION ADDED HAS CONVOID: " + iRes);
                 return numFails;
@@ -396,7 +396,8 @@ public class Prog4 {
         }
         // Persona
         else if ((split[0].contentEquals("persona.create")) && (split.length == 3)) {
-            // Persona creation is our only case of a functionality w/ all Strings; no isViable needed
+            // Persona creation is our only case of a functionality w/ all Strings; no
+            // isViable needed
             iRes = createPersona(conn, split[1], split[2]);
             if (iRes != -1)
                 System.out.println("PERSONA ADDED HAS PERSONAID: " + iRes);
@@ -411,7 +412,8 @@ public class Prog4 {
         // Template
         else if ((split[0].contentEquals("template.create")) && (split.length == 5)) {
             if ((isViable(split[3], "int")) && (isViable(split[4], "int"))) {
-                iRes = addPromptTemplate(conn, split[1], split[2], Integer.parseInt(split[3]), Integer.parseInt(split[4]));
+                iRes = addPromptTemplate(conn, split[1], split[2], Integer.parseInt(split[3]),
+                        Integer.parseInt(split[4]));
                 if (iRes != -1)
                     System.out.println("TEMPLATE ADDED HAS TEMPLATEID: " + iRes);
                 return numFails;
@@ -433,7 +435,8 @@ public class Prog4 {
         }
         // Invoice
         else if ((split[0].contentEquals("invoice.create")) && (split.length == 3)) {
-            // Invoice creation is our only case of a double instead of an int; call isViable with double
+            // Invoice creation is our only case of a double instead of an int; call
+            // isViable with double
             if ((isViable(split[1], "int")) && (isViable(split[2], "double"))) {
                 iRes = newInvoice(conn, Integer.parseInt(split[1]), Double.parseDouble(split[2]));
                 if (iRes != -1)
@@ -466,8 +469,7 @@ public class Prog4 {
         // If it matches none of them, print a UI syntax error and handle accordingly
         System.out.println("ERROR: INCORRECT SYNTAX OR QUERY.");
         numFails++;
-        if (numFails > 2)
-        {
+        if (numFails > 2) {
             System.out.println("   HINT: CONSULT HELP MENUES FOR CORRECT SYNTAX.");
             System.out.println("   (PLEASE TYPE 'help' FOR MORE INFORMATION!)");
             // Resets to 0 so the hint has a cooldown
@@ -476,7 +478,6 @@ public class Prog4 {
         // If not yet at 3, return the incremented numFails
         return numFails;
     }
-
 
     /*-------------------------------------------------------------------------
     |   Method query1(int userId, Connection conn)
@@ -511,9 +512,9 @@ public class Prog4 {
             // conversationID, and timeStamp
             // And then select only bookmarked messages.
             String queryString = "SELECT m.messageId, c.title, m.timestamp " +
-                     "FROM orvik.message m JOIN orvik.conversation c " +
-                     "ON m.conversationId = c.conversationId " +
-                     "WHERE m.messageId IN (SELECT messageId FROM orvik.bookmark WHERE userId = ?)";
+                    "FROM orvik.message m JOIN orvik.conversation c " +
+                    "ON m.conversationId = c.conversationId " +
+                    "WHERE m.messageId IN (SELECT messageId FROM orvik.bookmark WHERE userId = ?)";
 
             // Using a PreparedStatement here to prevent SQL injection.
             PreparedStatement stmt = conn.prepareStatement(queryString);
@@ -528,7 +529,6 @@ public class Prog4 {
             System.out.println("Could not execute Query #1: " + e.getMessage());
         }
     }
-
 
     /*-------------------------------------------------------------------------
     |   Method query2(Connection con)
@@ -554,11 +554,11 @@ public class Prog4 {
             // Long query that joins user, conversation and invoice and returns the
             // email, amount owed and most recent conversation date for all outstanding
             // invoices.
-            String queryString = "SELECT email, amount, orvik.conversation.creationDate "+
-            "FROM orvik.users JOIN orvik.invoice USING (userId) JOIN orvik.conversation "+
-            "USING (userId) WHERE status='UNPAID' AND orvik.conversation.creationDate IN "+
-            "(SELECT max(orvik.conversation.creationDate) as maxDate FROM orvik.users "+
-            "JOIN orvik.conversation USING (userId) GROUP BY userId)";
+            String queryString = "SELECT email, amount, orvik.conversation.creationDate " +
+                    "FROM orvik.users JOIN orvik.invoice USING (userId) JOIN orvik.conversation " +
+                    "USING (userId) WHERE status='UNPAID' AND orvik.conversation.creationDate IN " +
+                    "(SELECT max(orvik.conversation.creationDate) as maxDate FROM orvik.users " +
+                    "JOIN orvik.conversation USING (userId) GROUP BY userId)";
 
             Statement stmt = null;
             ResultSet rs = null;
@@ -576,7 +576,6 @@ public class Prog4 {
             System.out.println("Could not execute Query #1: " + e.getMessage());
         }
     }
-
 
     /*-------------------------------------------------------------------------
     |   Method query3(Connection conn)
@@ -603,23 +602,23 @@ public class Prog4 {
     private static void query3(Connection conn) {
         try {
             String sqlStatement = "SELECT * FROM (SELECT p.name as personaName, " +
-            // f.rating is either 1 or 0?? 
+            // f.rating is either 1 or 0??
             // so we can take the average and multiply by 100 to get %
-                "ROUND(AVG(f.rating) * 100, 2) as thumbsUpPercent " + 
-            // we want the persona name
-            "FROM orvik.persona p " + 
-                // but we have to get to feedback, so first we connect to conversation
-                "JOIN orvik.conversation c ON p.personaId = c.personaId " + 
-                // then we connect to message
-                "JOIN orvik.message m ON c.conversationId = m.conversationId " + 
-                // and finally we connect to feedback
-                "LEFT JOIN orvik.feedback f ON m.messageId = f.messageId " +
-            // sort by the personaId and name (since we print name)
-            "GROUP BY p.personaId, p.name " + 
-            // descending order of average ratings
-            "ORDER BY thumbsUpPercent DESC) " +
-            // we only want the first one!
-            "WHERE ROWNUM = 1";
+                    "ROUND(AVG(f.rating) * 100, 2) as thumbsUpPercent " +
+                    // we want the persona name
+                    "FROM orvik.persona p " +
+                    // but we have to get to feedback, so first we connect to conversation
+                    "JOIN orvik.conversation c ON p.personaId = c.personaId " +
+                    // then we connect to message
+                    "JOIN orvik.message m ON c.conversationId = m.conversationId " +
+                    // and finally we connect to feedback
+                    "LEFT JOIN orvik.feedback f ON m.messageId = f.messageId " +
+                    // sort by the personaId and name (since we print name)
+                    "GROUP BY p.personaId, p.name " +
+                    // descending order of average ratings
+                    "ORDER BY thumbsUpPercent DESC) " +
+                    // we only want the first one!
+                    "WHERE ROWNUM = 1";
 
             PreparedStatement stmt = conn.prepareStatement(sqlStatement);
             ResultSet rs = stmt.executeQuery();
@@ -638,7 +637,6 @@ public class Prog4 {
             System.out.println("Could not execute Query #3: " + e.getMessage());
         }
     }
-
 
     /*-------------------------------------------------------------------------
     |   Method query4(int userId, Connection con)
@@ -675,14 +673,14 @@ public class Prog4 {
     private static void query4(int userId, Connection con) {
         try {
             String query = "SELECT * FROM ( " +
-                "  SELECT c.title, AVG(f.rating) AS avg_rating " +
-                "  FROM orvik.conversation c " +
-                "  JOIN orvik.message m ON c.conversationId = m.conversationId " +
-                "  JOIN orvik.feedback f ON m.messageId = f.messageId " +
-                "  WHERE c.userId = ? " +
-                "  GROUP BY c.conversationId, c.title " +
-                "  ORDER BY avg_rating DESC " +
-                ") WHERE ROWNUM <= 5";
+                    "  SELECT c.title, AVG(f.rating) AS avg_rating " +
+                    "  FROM orvik.conversation c " +
+                    "  JOIN orvik.message m ON c.conversationId = m.conversationId " +
+                    "  JOIN orvik.feedback f ON m.messageId = f.messageId " +
+                    "  WHERE c.userId = ? " +
+                    "  GROUP BY c.conversationId, c.title " +
+                    "  ORDER BY avg_rating DESC " +
+                    ") WHERE ROWNUM <= 5";
             PreparedStatement stmt = con.prepareStatement(query);
             stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();
@@ -697,9 +695,7 @@ public class Prog4 {
         }
     }
 
-
     // FUNCTIONALITY #1 (Pearl)
-
 
     /*-------------------------------------------------------------------------
     |   Method addUser(Connection conn, String name, String email, 
@@ -768,7 +764,6 @@ public class Prog4 {
         }
     }
 
-
     /*-------------------------------------------------------------------------
     |   Method updateUser(Connection conn, int userID, String toUpdate, 
     |          String changeStr, int newTier)
@@ -836,9 +831,9 @@ public class Prog4 {
             System.err.println("Could not read table: " + e.getMessage());
             return false;
         }
-        
+
         // if toUpdate is "name"
-        if (toUpdate.equals("name")) {
+        if (toUpdate.equalsIgnoreCase("name")) {
             // sql statement to change the name with the specific userId
             String sqlStatement = "UPDATE orvik.Users SET name = ? WHERE userId = ?";
             try {
@@ -858,7 +853,7 @@ public class Prog4 {
             }
         }
         // if toUpdate is "email"
-        else if (toUpdate.equals("email")) {
+        else if (toUpdate.equalsIgnoreCase("email")) {
             // sql statement to change the email with the specific userId
             String sqlStatement = "UPDATE orvik.Users SET email = ? WHERE userId = ?";
             try {
@@ -878,7 +873,7 @@ public class Prog4 {
             }
         }
         // if toUpdate is language
-        else if (toUpdate.equals("language")) {
+        else if (toUpdate.equalsIgnoreCase("language")) {
             // sql statement to change the language with the specific userId
             String sqlStatement = "UPDATE orvik.Users SET language = ? WHERE userId = ?";
             try {
@@ -897,7 +892,7 @@ public class Prog4 {
             }
         }
         // if toUpdate is tierId
-        else if (toUpdate.equals("tierId")) {
+        else if (toUpdate.equalsIgnoreCase("tierId")) {
             // jordan already wrote a method for this!
             return updateSubscription(conn, userID, newTier);
         }
@@ -905,7 +900,6 @@ public class Prog4 {
         System.err.println("Could not update!: Invalid option");
         return false;
     }
-
 
     /*-------------------------------------------------------------------------
     |   Method deleteUser(Connection conn, int userID)
@@ -1030,16 +1024,14 @@ public class Prog4 {
             return true;
         } catch (SQLException e) {
             // catch sql exceptions
-            System.err.println("Could not delete from table: " + e.getMessage());
+            System.err.println("Could not delete the user (invalid ID, maybe?): " + e.getMessage());
             return false;
         }
     }
 
-
     // FUNCTIONALITY #2 (Jordan)
 
-
-   /*-------------------------------------------------------------------------
+    /*-------------------------------------------------------------------------
     |   Method newConvo(Connection conn, int userID)
     |
     |   Purpose: Given a userId, this method has the purpose of creating a new 
@@ -1071,10 +1063,12 @@ public class Prog4 {
     |            later.
     *------------------------------------------------------------------------*/
     private static int newConvo(Connection conn, int userID, int personaID, int workspaceID, String title) {
-        // Note the prepared statement syntax as well as the use of a sequence to minimize Java PRNG collsions.
+        // Note the prepared statement syntax as well as the use of a sequence to
+        // minimize Java PRNG collsions.
         String sqlStatement = "INSERT INTO orvik.conversation (conversationId, userId, title, creationDate, personaId, workspaceId) VALUES (orvik.convo_seq.nextval, ?, ?, ?, ?, ?)";
         try {
-            // We are using a sequence here, so we need to pass in the generated columns to our prepared statement.
+            // We are using a sequence here, so we need to pass in the generated columns to
+            // our prepared statement.
             String[] generatedCols = { "conversationId" };
             PreparedStatement stmt = conn.prepareStatement(sqlStatement, generatedCols);
 
@@ -1085,7 +1079,6 @@ public class Prog4 {
             stmt.setInt(4, personaID);
             stmt.setInt(5, workspaceID);
             stmt.executeUpdate();
-            
 
             // We are using SQL sequence to get the ID of the new conversation, so we need
             // to get it.
@@ -1096,19 +1089,20 @@ public class Prog4 {
                 return result;
             }
             stmt.close();
-            
+
             // not found!
             return -1;
 
-        } 
-        // whoops, something went wrong! 
+        }
+        // whoops, something went wrong!
         catch (SQLException e) {
-            System.err.println("Could not write to the table: " + e.getMessage());
+            System.err
+                    .println("Could not add to a new conversation (user, persona or workspace likely does not exist): "
+                            + e.getMessage());
             return -1;
         }
 
     }
-
 
     /*-------------------------------------------------------------------------
     |   Method addMessageToConvo(Connection conn, int conversationID, 
@@ -1149,7 +1143,6 @@ public class Prog4 {
             stmt.setString(3, message);
             stmt.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
             stmt.executeUpdate();
-            
 
             // Get the ID of the new message.
             ResultSet rs = stmt.getGeneratedKeys();
@@ -1159,14 +1152,13 @@ public class Prog4 {
             stmt.close();
             return messageID;
         } catch (SQLException e) {
-            System.err.println("Could not write to the table: " + e.getMessage());
+            System.err.println("Could not add a message (the convo does not exist): " + e.getMessage());
             return -1;
         }
     }
 
-
     /*-------------------------------------------------------------------------
-    |   Method aupdateMessageFeedback(Connection conn, int messageID,
+    |   Method updateMsgFeedback(Connection conn, int messageID,
     |          int rating, String feedback)
     |
     |   Purpose: This method will add feedback to a particular message and 
@@ -1202,12 +1194,12 @@ public class Prog4 {
             stmt.executeUpdate();
             stmt.close();
         } catch (SQLException e) {
-            System.err.println("Could not write to the table: " + e.getMessage());
+            System.err.println("Cannot add feedback to the message (nonexistant message or invalid rating (1-5)): "
+                    + e.getMessage());
             return false;
         }
         return true;
     }
-
 
     /*-------------------------------------------------------------------------
     |   Method deleteUserMessages(Connection conn, int userID)
@@ -1233,24 +1225,43 @@ public class Prog4 {
     *------------------------------------------------------------------------*/
     private static boolean deleteUserMessages(Connection conn, int userID) {
 
-        // Delete the entries where the userID matches.
-        String sqlStatement = "DELETE FROM orvik.message WHERE conversationId IN (SELECT conversationId FROM orvik.conversation WHERE userId = ?)";
+        // FK constraints requires us to recursively delete things.
+        // 1. Delete Bookmarks attached to this user's messages
+        String delBookmarks = "DELETE FROM bookmark WHERE messageId IN (SELECT m.messageId FROM message m JOIN conversation c ON m.conversationId = c.conversationId WHERE c.userId = ?)";
+
+        // 2. Delete Feedback attached to this user's messages
+        String delFeedback = "DELETE FROM feedback WHERE messageId IN (SELECT m.messageId FROM message m JOIN conversation c ON m.conversationId = c.conversationId WHERE c.userId = ?)";
+
+        // 3. Delete the Messages themselves
+        String delMessages = "DELETE FROM message WHERE conversationId IN (SELECT conversationId FROM conversation WHERE userId = ?)";
+
         try {
-            // There are no sequences used here. 
-            PreparedStatement stmt = conn.prepareStatement(sqlStatement);
-            stmt.setInt(1, userID);
-            stmt.executeUpdate();
-            stmt.close();
+            // delete Bookmarks
+            PreparedStatement stmt1 = conn.prepareStatement(delBookmarks);
+            stmt1.setInt(1, userID);
+            stmt1.executeUpdate();
+            stmt1.close();
+
+            // delete Feedback
+            PreparedStatement stmt2 = conn.prepareStatement(delFeedback);
+            stmt2.setInt(1, userID);
+            stmt2.executeUpdate();
+            stmt2.close();
+
+            // delete and then, clear the Messages
+            PreparedStatement stmt3 = conn.prepareStatement(delMessages);
+            stmt3.setInt(1, userID);
+            stmt3.executeUpdate();
+            stmt3.close();
+
             return true;
         } catch (SQLException e) {
-            System.err.println("Could not write to the table: " + e.getMessage());
+            System.err.println("Could not delete messages (invalid user, perhaps?): " + e.getMessage());
             return false;
         }
     }
 
-
     // FUNCTIONALITY #3 (Pearl)
-
 
     /*-------------------------------------------------------------------------
     |   Method createWorkspace(Connection conn, int userID, String name)
@@ -1305,7 +1316,7 @@ public class Prog4 {
             System.err.println("Could not read table: " + e.getMessage());
             return -1;
         }
-        
+
         // sql statement for creating a new workspace
         String sqlStatement = "INSERT INTO orvik.workspace (workspaceId, name) VALUES (orvik.workspace_seq.nextval, ?)";
         try {
@@ -1332,7 +1343,6 @@ public class Prog4 {
             return -1;
         }
     }
-
 
     /*-------------------------------------------------------------------------
     |   Method createMembership(Connection conn, int userID, 
@@ -1381,7 +1391,6 @@ public class Prog4 {
             return false;
         }
     }
-
 
     /*-------------------------------------------------------------------------
     |   Method changeWorkspaceName(Connection conn, int workspaceID, 
@@ -1454,7 +1463,6 @@ public class Prog4 {
             return false;
         }
     }
-
 
     /*-------------------------------------------------------------------------
     |   Method addWorkspaceConvo(Connection conn, int userID, 
@@ -1537,7 +1545,7 @@ public class Prog4 {
             System.err.println("Could not read table: " + e.getMessage());
             return -1;
         }
-        
+
         // sql statement to get items in workspaceMembership with specific userId and
         // workspaceId
         String belongs = "SELECT COUNT(*) FROM orvik.workspaceMembership WHERE workspaceId = ? AND userId = ?";
@@ -1568,9 +1576,7 @@ public class Prog4 {
         }
     }
 
-
     // FUNCTIONALITY #4 (Jordan)
-
 
     /*-------------------------------------------------------------------------
     |   Method createPersona(Connection conn, String name, String directive)
@@ -1606,7 +1612,6 @@ public class Prog4 {
             stmt.setString(1, name);
             stmt.setString(2, directive);
             stmt.executeUpdate();
-            
 
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
@@ -1615,12 +1620,11 @@ public class Prog4 {
             stmt.close();
             return personaID;
         } catch (SQLException e) {
-            System.err.println("Could not write to the table: " + e.getMessage());
+            System.err.println("Persona creation failed (missing parameters?): " + e.getMessage());
             return -1;
         }
 
     }
-
 
     /*-------------------------------------------------------------------------
     |   Method deletePersona(Connection conn, int personaID)
@@ -1656,7 +1660,7 @@ public class Prog4 {
                 return false;
             }
         } catch (SQLException e) {
-            System.err.println("Could not read from the table: " + e.getMessage());
+            System.err.println("Persona deletion failed (likely an invalid personaID): " + e.getMessage());
             return false;
         }
 
@@ -1669,14 +1673,12 @@ public class Prog4 {
             stmt.close();
             return true;
         } catch (SQLException e) {
-            System.err.println("Could not write to the table: " + e.getMessage());
+            System.err.println("Persona deletion failed (likely an invalid personaID): " + e.getMessage());
             return false;
         }
     }
 
-
     // FUNCTIONALITY #5 (Pearl)
-
 
     /*-------------------------------------------------------------------------
     |   Method addPromptTemplate(Connection conn, String title, 
@@ -1736,7 +1738,7 @@ public class Prog4 {
             System.err.println("Could not read table: " + e.getMessage());
             return -1;
         }
-        
+
         String sqlStatement = "INSERT INTO orvik.promptTemplate (templateId, title, content, userId, workspaceId) VALUES (orvik.promptTemplate_seq.nextval, ?, ?, ?, ?)";
         try {
             String[] generatedCols = { "templateId" };
@@ -1766,7 +1768,6 @@ public class Prog4 {
             return -1;
         }
     }
-
 
     /*-------------------------------------------------------------------------
     |   Method updatePromptTemplate(Connection conn, int templateID,
@@ -1827,7 +1828,7 @@ public class Prog4 {
             System.err.println("Could not read table: " + e.getMessage());
             return false;
         }
-        
+
         // if we want to update the prompt template title
         if (toUpdate.equals("title")) {
             // sql statement for changing the title
@@ -1873,9 +1874,7 @@ public class Prog4 {
         return false;
     }
 
-
     // FUNCTIONALITY #6 (Jordan)
-
 
     /*-------------------------------------------------------------------------
     |   Method updateSubscription(Connection conn, int userID, int tierID)
@@ -1915,12 +1914,11 @@ public class Prog4 {
             stmt.close();
             return true;
         } catch (SQLException e) {
-            System.err.println("Could not write to the table: " + e.getMessage());
+            System.err.println("Could not write to the table (likely invalid tier entered.): " + e.getMessage());
             return false;
         }
 
     }
-
 
     /*-------------------------------------------------------------------------
     |   Method withinLimit(Connection conn, int userID)
@@ -1969,15 +1967,15 @@ public class Prog4 {
                 }
             }
         } catch (SQLException e) {
-            System.err.println("ERROR: Cannot verify message limit: " + e.getMessage());
+            System.err.println(
+                    "ERROR: Cannot verify message limit. Since we cannot check, you will not be able to send messages: "
+                            + e.getMessage());
             return false;
         }
         return true;
     }
 
-
     // FUNCTIONALITY #7 (Pearl)
-
 
     /*-------------------------------------------------------------------------
     |   Method newInvoice(Connection conn, int userID, int amount)
@@ -2059,7 +2057,6 @@ public class Prog4 {
         }
     }
 
-
     /*-------------------------------------------------------------------------
     |   Method paidBill(Connection conn, int invoiceID)
     |
@@ -2128,7 +2125,7 @@ public class Prog4 {
             System.err.println("Could not read table: " + e.getMessage());
             return false;
         }
-        
+
         // statement to update invoice status to "PAID"
         String sqlStatement = "UPDATE orvik.invoice SET status = ? WHERE invoiceId = ?";
         try {
@@ -2145,7 +2142,6 @@ public class Prog4 {
             return false;
         }
     }
-
 
     // FUNCTIONALITY #8 (Jordan)
     /*-------------------------------------------------------------------------
@@ -2190,7 +2186,6 @@ public class Prog4 {
             // new ticket, so it is open.
             stmt.setString(5, "OPEN");
             stmt.executeUpdate();
-            
 
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
@@ -2199,11 +2194,10 @@ public class Prog4 {
             stmt.close();
             return ticketID;
         } catch (SQLException e) {
-            System.err.println("Could not create ticket! : " + e.getMessage());
+            System.err.println("Could not create ticket! (Agent likely invalid): " + e.getMessage());
             return -1;
         }
     }
-
 
     /*-------------------------------------------------------------------------
     |   Method closeTicket(Connection conn, int ticketID)
@@ -2238,14 +2232,12 @@ public class Prog4 {
             stmt.close();
             return true;
         } catch (SQLException e) {
-            System.err.println("Could not close ticket! : " + e.getMessage());
+            System.err.println("Could not close ticket (incorrect ticketID)! : " + e.getMessage());
             return false;
         }
     }
 
-
     // HELPER METHOD BELOW (Annabelle)
-
 
     /*-------------------------------------------------------------------------
     |   Method isViable(String num, String doubOrInt)
@@ -2266,27 +2258,20 @@ public class Prog4 {
     |
     |   Author: Annabelle Jonatan
     *------------------------------------------------------------------------*/
-    private static boolean isViable(String num, String doubOrInt)
-    {
+    private static boolean isViable(String num, String doubOrInt) {
         if (doubOrInt.contentEquals("int")) {
             // Try-catch convert the String num to an int
-            try
-            {
+            try {
                 Integer.parseInt(num);
-            }
-            catch (NumberFormatException e)
-            {
+            } catch (NumberFormatException e) {
                 return false;
             }
             return true;
         } else {
             // Try-catch convert the String num to an int
-            try
-            {
+            try {
                 Double.parseDouble(num);
-            }
-            catch (NumberFormatException e)
-            {
+            } catch (NumberFormatException e) {
                 return false;
             }
             return true;
