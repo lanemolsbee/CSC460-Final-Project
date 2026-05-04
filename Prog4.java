@@ -1498,9 +1498,9 @@ public class Prog4 {
     *------------------------------------------------------------------------*/
     private static int addWorkspaceConvo(Connection conn, int userID, int personaID, int workspaceID, String title) {
         // make sure the persona exists
-        String checkExists = "SELECT COUNT(*) FROM orvik.persona WHERE personaId = ?";
+        String checkExists1 = "SELECT COUNT(*) FROM orvik.persona WHERE personaId = ?";
         try {
-            PreparedStatement stmt = conn.prepareStatement(checkExists);
+            PreparedStatement stmt = conn.prepareStatement(checkExists1);
             // specific user
             stmt.setInt(1, personaID);
             ResultSet rs = stmt.executeQuery();
@@ -1717,6 +1717,29 @@ public class Prog4 {
     |            inserted into the template table.
     *------------------------------------------------------------------------*/
     private static int addPromptTemplate(Connection conn, String title, String content, int userID, int workspaceID) {
+        // make sure that the workspace membership exists
+        String checkExists = "SELECT COUNT(*) FROM orvik.workspaceMembership WHERE userId = ? AND workspaceId = ?";
+        try {
+            PreparedStatement stmt = conn.prepareStatement(checkExists);
+            // specific user
+            stmt.setInt(1, userID);
+            stmt.setInt(2, workspaceID);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() && !(rs.getInt(1) > 0)) {
+                // no one exists
+                System.err.format("Cannot add promptTemplate, workspace membership doesn't exist.\n",
+                        userID);
+                stmt.close();
+                rs.close();
+                // return false because user doesn't exist
+                return -1;
+            }
+        } catch (SQLException e) {
+            // catch sql exceptions
+            System.err.println("Could not read table: " + e.getMessage());
+            return -1;
+        }
+        
         String sqlStatement = "INSERT INTO orvik.promptTemplate (templateId, title, content, userId, workspaceId) VALUES (orvik.promptTemplate_seq.nextval, ?, ?, ?, ?)";
         try {
             String[] generatedCols = { "templateId" };
@@ -1787,6 +1810,27 @@ public class Prog4 {
     |            "title" or "content", then false is automatically returned.
     *------------------------------------------------------------------------*/
     private static boolean updatePromptTemplate(Connection conn, int templateID, String toUpdate, String changeStr) {
+        // make sure that the template exists
+        String checkExists = "SELECT COUNT(*) FROM orvik.promptTemplate WHERE templateId = ?";
+        try {
+            PreparedStatement stmt = conn.prepareStatement(checkExists);
+            // specific template
+            stmt.setInt(1, templateID);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() && !(rs.getInt(1) > 0)) {
+                // no one exists
+                System.err.format("Cannot change prompt template, it doesn't exist.\n");
+                stmt.close();
+                rs.close();
+                // return false because template doesn't exist
+                return false;
+            }
+        } catch (SQLException e) {
+            // catch sql exceptions
+            System.err.println("Could not read table: " + e.getMessage());
+            return false;
+        }
+        
         // if we want to update the prompt template title
         if (toUpdate.equals("title")) {
             // sql statement for changing the title
@@ -1964,6 +2008,27 @@ public class Prog4 {
     |            inserted into the invoice table. 
     *------------------------------------------------------------------------*/
     private static int newInvoice(Connection conn, int userID, double amount) {
+        // make sure that the user exists
+        String checkExists = "SELECT COUNT(*) FROM orvik.Users WHERE userId = ?";
+        try {
+            PreparedStatement stmt = conn.prepareStatement(checkExists);
+            // specific user
+            stmt.setInt(1, userID);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() && !(rs.getInt(1) > 0)) {
+                // no one exists
+                System.err.format("Cannot add an invoice, the user doesn't exist.\n");
+                stmt.close();
+                rs.close();
+                // return false because user doesn't exist
+                return -1;
+            }
+        } catch (SQLException e) {
+            // catch sql exceptions
+            System.err.println("Could not read table: " + e.getMessage());
+            return -1;
+        }
+
         // sql statement to add new invoice to table
         String sqlStatement = "INSERT INTO orvik.invoice (invoiceId, userId, amount, invoiceDate, status) VALUES (orvik.invoice_seq.nextval, ?, ?, ?, ?)";
         try {
@@ -2023,6 +2088,27 @@ public class Prog4 {
     |            returned by the method.
     *------------------------------------------------------------------------*/
     private static boolean paidBill(Connection conn, int invoiceID) {
+        // make sure that the user exists
+        String checkExists = "SELECT COUNT(*) FROM orvik.invoice WHERE invoiceId = ?";
+        try {
+            PreparedStatement stmt = conn.prepareStatement(checkExists);
+            // specific user
+            stmt.setInt(1, invoiceID);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() && !(rs.getInt(1) > 0)) {
+                // no one exists
+                System.err.format("Cannot pay bill, invoice doesn't exist.\n");
+                stmt.close();
+                rs.close();
+                // return false because user doesn't exist
+                return false;
+            }
+        } catch (SQLException e) {
+            // catch sql exceptions
+            System.err.println("Could not read table: " + e.getMessage());
+            return false;
+        }
+        
         // statement to update invoice status to "PAID"
         String sqlStatement = "UPDATE orvik.invoice SET status = ? WHERE invoiceId = ?";
         try {
