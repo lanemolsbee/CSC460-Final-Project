@@ -136,6 +136,7 @@ public class Prog4 {
         System.out.println(help);
         System.out.println("   <> Syntax Example: 'functionalities 1' is acceptable, 'functionalities <1/2>' is not.");
         System.out.println("   Also, all '' represent string contents. You should not actually type these out.");
+        System.out.println('   Additionally, string args that contain spaces must be capped "in quotes".');
         System.out.println("");
 
         while (loopRun == true) {
@@ -190,7 +191,7 @@ public class Prog4 {
             System.out.println("      change user information: 'user.change <int USERID> <'name'/'email'/'language'/'tierId'> <string NEW VALUE> <int NEW TIER>'");
             System.out.println("      delete user: 'user.delete <int USERID>'");
             System.out.println("   CONVERSATION...");;
-            System.out.println("      add msg to convo: 'convo.add <int CONVOID> <string MESSAGE>'");
+            System.out.println("      add msg to convo: 'convo.add <int CONVOID> <string MESSAGE> <int USERID>'");
             System.out.println("      add feedback to msg: 'convo.feedback <int MESSAGEID> <int RATING> <string FEEDBACK>'");
             System.out.println("   WORKSPACE...");
             System.out.println("      create workspace: 'workspace.create <int USERID> <string NAME>'");
@@ -286,7 +287,7 @@ public class Prog4 {
     |   Returns: An int representing the number of "failures" from the user
     |            (ie. count of syntax failures); handles printing the hint.
     |
-    |   Author: Annabelle Jonatan
+    |   Author: Annabelle Jonatan, Jordan Orvik (regex split!!)
     |   Extra background: I'm sorry this looks so spaghetti.
     *------------------------------------------------------------------------*/
     private static int queryToAction(String query, Connection conn, int numFails) {
@@ -352,10 +353,10 @@ public class Prog4 {
             }
         } 
         // Conversation
-        else if ((split[0].contentEquals("convo.add")) && (split.length == 3)) {
+        else if ((split[0].contentEquals("convo.add")) && (split.length == 4)) {
             if (isViable(split[1], "int")) {
                 // Check if within limit before attempting to add a message
-                if (withinLimit(conn, Integer.parseInt(split[1]))) {
+                if (withinLimit(conn, Integer.parseInt(split[3]))) {
                     iRes = addMessageToConvo(conn, Integer.parseInt(split[1]), split[2]);
                     if (iRes != -1)
                         System.out.println("MESSAGE ADDED HAS MESSAGEID: " + iRes);
