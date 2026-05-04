@@ -1,7 +1,20 @@
 # CSC460-Final-Project
 
 ## Compilation and Execution Instructions
-- write compilation and execution instructions here
+- To compile and execute this program on lectura:
+    - Add the Oracle JDBC driver to your CLASSPATH environment variable:
+        - export CLASSPATH=/usr/lib/oracle/19.8/client64/lib/ojdbc8.jar:${CLASSPATH}
+    - Now, compile:
+        - javac Prog4.java
+    - Finally, run:
+        - java Prog4 <oracle username> <oracle password>
+    - Once the program runs, there are further instructions
+        - There are two options:
+            - 'queries' which gives all query options
+            - functionalities:
+                - there are 8, but divided into two pages
+                - functionalities 1, functionalities 2
+        - From there, instructions on executing queries/functionalities will be given
 
 ## Project Workload Distribution
 <ins>Group Members: Lane, Pearl, Annabelle, Jordan</ins>
