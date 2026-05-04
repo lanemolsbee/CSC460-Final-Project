@@ -1,6 +1,9 @@
 import java.sql.*;
-import java.time.*;
+//import java.time.*;
 import java.util.*;
+//import java.io.*;
+import java.util.regex.*;
+
 
 public class Prog4 {
     // INTERFACE (Annabelle)
@@ -287,8 +290,14 @@ public class Prog4 {
     private static int queryToAction(String query, Connection conn, int numFails) {
         // Temporary variables for storing query results
         int iRes = 0;
-        // Split for processing the query and its parameters
-        String[] split = query.split(" ");
+        // Split for processing the query and its parameters.
+        // allows for us to have multiple words in a parameter.
+        List<String> argList = new ArrayList<String>();
+        Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(query);
+        while (m.find()) {
+            argList.add(m.group(1));
+        }
+        String[] split = argList.toArray(new String[0]);
 
         // Check to see which query/functionality to run
         // Also, check to make sure enough args are supplied for each!
@@ -1069,7 +1078,7 @@ public class Prog4 {
             // Pass in the parameters to the table.
             stmt.setInt(1, userID);
             stmt.setString(2, title);
-            stmt.setTimestamp(3, new Timestamp(LocalTime.now().toNanoOfDay()));
+            stmt.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
             stmt.setInt(4, personaID);
             stmt.setInt(5, workspaceID);
             stmt.executeUpdate();
@@ -1611,7 +1620,7 @@ public class Prog4 {
 
 
     /*-------------------------------------------------------------------------
-    |   Method delete(Connection conn, int personaID)
+    |   Method deletePersona(Connection conn, int personaID)
     |
     |   Purpose: This method will delete a persona from our LLM system.
     |
@@ -1937,10 +1946,10 @@ public class Prog4 {
         // and joins it with the user table
         // and the membership tier table
         String sql = "SELECT COUNT(m.messageId) AS totalMsgs, MAX(mt.messageLimit) AS msgLimit " +
-                "FROM Users u " +
-                "JOIN membershipTier mt ON u.tierId = mt.tierId " +
-                "LEFT JOIN conversation c ON c.userId = u.userId " +
-                "LEFT JOIN message m ON m.conversationId = c.conversationId " +
+                "FROM orvik.Users u " +
+                "JOIN orvik.membershipTier mt ON u.tierId = mt.tierId " +
+                "LEFT JOIN orvik.conversation c ON c.userId = u.userId " +
+                "LEFT JOIN orvik.message m ON m.conversationId = c.conversationId " +
                 "WHERE u.userId = ?";
 
         // Try/with syntax to handle sql exceptions
@@ -2171,7 +2180,7 @@ public class Prog4 {
 
 
     /*-------------------------------------------------------------------------
-    |   Method deleteTicket(Connection conn, int ticketID)
+    |   Method closeTicket(Connection conn, int ticketID)
     |
     |   Purpose: This method will close out a support ticket by setting the 
     |            status to CLOSED.
@@ -2193,7 +2202,7 @@ public class Prog4 {
     |   Returns: A boolean which identifies whether the ticket was successfully closed.
     *------------------------------------------------------------------------*/
     private static boolean closeTicket(Connection conn, int ticketID, int duration) {
-        String sqlStatement = "UPDATE orvik.ticket SET outcome = ?, duration = ? WHERE ticketId = ?";
+        String sqlStatement = "UPDATE orvik.supportTicket SET outcome = ?, duration = ? WHERE ticketId = ?";
         try {
             PreparedStatement stmt = conn.prepareStatement(sqlStatement);
             stmt.setString(1, "CLOSED");
