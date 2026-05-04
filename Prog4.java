@@ -739,7 +739,7 @@ public class Prog4 {
     |            inserted into the Users table.
     *------------------------------------------------------------------------*/
     private static int addUser(Connection conn, String name, String email, String language, int tierID) {
-        String sqlStatement = "INSERT INTO orvik.Users (userId, name, email, creationDate, language, tierId) VALUES (Users_seq.nextval, ?, ?, ?, ?, ?)";
+        String sqlStatement = "INSERT INTO orvik.Users (userId, name, email, creationDate, language, tierId) VALUES (orvik.Users_seq.nextval, ?, ?, ?, ?, ?)";
         try {
             String[] generatedCols = { "userId" };
             int userId = -1;
@@ -1031,7 +1031,7 @@ public class Prog4 {
     *------------------------------------------------------------------------*/
     private static int newConvo(Connection conn, int userID, int personaID, int workspaceID, String title) {
         // Note the prepared statement syntax as well as the use of a sequence to minimize Java PRNG collsions.
-        String sqlStatement = "INSERT INTO orvik.conversation (conversationId, userId, title, creationDate, personaId, workspaceId) VALUES (convo_seq.nextval, ?, ?, ?, ?, ?)";
+        String sqlStatement = "INSERT INTO orvik.conversation (conversationId, userId, title, creationDate, personaId, workspaceId) VALUES (orvik.convo_seq.nextval, ?, ?, ?, ?, ?)";
         try {
             // We are using a sequence here, so we need to pass in the generated columns to our prepared statement.
             String[] generatedCols = { "conversationId" };
@@ -1090,7 +1090,7 @@ public class Prog4 {
     private static int addMessageToConvo(Connection conn, int convoID, String message) {
 
         // See the comments in newConvo, these are barely any different.
-        String sqlStatement = "INSERT INTO orvik.message (messageId, conversationId, role, content, timestamp) VALUES (message_seq.nextval, ?, ?, ?, ?)";
+        String sqlStatement = "INSERT INTO orvik.message (messageId, conversationId, role, content, timestamp) VALUES (orvik.message_seq.nextval, ?, ?, ?, ?)";
         try {
             // Not found starter.
             int messageID = -1;
@@ -1240,7 +1240,7 @@ public class Prog4 {
     *------------------------------------------------------------------------*/
     private static int createWorkspace(Connection conn, int userID, String name) {
         // sql statement for creating a new workspace
-        String sqlStatement = "INSERT INTO orvik.workspace (workspaceId, name) VALUES (workspace_seq.nextval, ?)";
+        String sqlStatement = "INSERT INTO orvik.workspace (workspaceId, name) VALUES (orvik.workspace_seq.nextval, ?)";
         try {
             String[] generatedCols = { "workspaceId" };
             // create workspaceId
@@ -1465,7 +1465,7 @@ public class Prog4 {
     private static int createPersona(Connection conn, String name, String directive) {
 
         // see newConvo's comments, they're almost identical to this.
-        String sqlStatement = "INSERT INTO orvik.persona (personaId, name, instructions) VALUES (persona_seq.nextval, ?, ?)";
+        String sqlStatement = "INSERT INTO orvik.persona (personaId, name, instructions) VALUES (orvik.persona_seq.nextval, ?, ?)";
         try {
             String[] generatedCols = { "personaId" };
             PreparedStatement stmt = conn.prepareStatement(sqlStatement, generatedCols);
@@ -1580,7 +1580,7 @@ public class Prog4 {
     |            inserted into the template table.
     *------------------------------------------------------------------------*/
     private static int addPromptTemplate(Connection conn, String title, String content, int userID, int workspaceID) {
-        String sqlStatement = "INSERT INTO orvik.promptTemplate (templateId, title, content, userId, workspaceId) VALUES (promptTemplate_seq.nextval, ?, ?, ?, ?)";
+        String sqlStatement = "INSERT INTO orvik.promptTemplate (templateId, title, content, userId, workspaceId) VALUES (orvik.promptTemplate_seq.nextval, ?, ?, ?, ?)";
         try {
             String[] generatedCols = { "templateId" };
             PreparedStatement stmt = conn.prepareStatement(sqlStatement, generatedCols);
@@ -1828,7 +1828,7 @@ public class Prog4 {
     *------------------------------------------------------------------------*/
     private static int newInvoice(Connection conn, int userID, double amount) {
         // sql statement to add new invoice to table
-        String sqlStatement = "INSERT INTO orvik.invoice (invoiceId, userId, amount, invoiceDate, status) VALUES (invoice_seq.nextval, ?, ?, ?, ?)";
+        String sqlStatement = "INSERT INTO orvik.invoice (invoiceId, userId, amount, invoiceDate, status) VALUES (orvik.invoice_seq.nextval, ?, ?, ?, ?)";
         try {
             String[] generatedCols = { "invoiceId" };
             PreparedStatement stmt = conn.prepareStatement(sqlStatement, generatedCols);
@@ -1932,7 +1932,7 @@ public class Prog4 {
     |   Returns: The ID of the ticket such that it can be referenced later.
     *------------------------------------------------------------------------*/
     private static int openTicket(Connection conn, int userID, int agentID, String topic) {
-        String sqlStatement = "INSERT INTO orvik.supportTicket (ticketId, userId, agentId, topic, duration, outcome) VALUES (ticket_seq.nextval, ?, ?, ?, ?, ?)";
+        String sqlStatement = "INSERT INTO orvik.supportTicket (ticketId, userId, agentId, topic, duration, outcome) VALUES (orvik.ticket_seq.nextval, ?, ?, ?, ?, ?)";
         try {
             String[] generatedCols = { "ticketId" };
             PreparedStatement stmt = conn.prepareStatement(sqlStatement, generatedCols);
