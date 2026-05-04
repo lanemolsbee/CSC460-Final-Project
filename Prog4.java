@@ -1497,6 +1497,27 @@ public class Prog4 {
     |            conversation is inserted into the convo table.
     *------------------------------------------------------------------------*/
     private static int addWorkspaceConvo(Connection conn, int userID, int personaID, int workspaceID, String title) {
+        // make sure the persona exists
+        String checkExists = "SELECT COUNT(*) FROM orvik.persona WHERE personaId = ?";
+        try {
+            PreparedStatement stmt = conn.prepareStatement(checkExists);
+            // specific user
+            stmt.setInt(1, personaID);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() && !(rs.getInt(1) > 0)) {
+                // no one exists
+                System.err.format("Cannot add conversation, persona doesn't exist.\n");
+                stmt.close();
+                rs.close();
+                // return false because user doesn't exist
+                return -1;
+            }
+        } catch (SQLException e) {
+            // catch sql exceptions
+            System.err.println("Could not read table: " + e.getMessage());
+            return -1;
+        }
+
         // make sure that the workspace membership exists
         String checkExists = "SELECT COUNT(*) FROM orvik.workspaceMembership WHERE userId = ? AND workspaceId = ?";
         try {
