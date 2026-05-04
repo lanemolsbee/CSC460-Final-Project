@@ -1288,6 +1288,27 @@ public class Prog4 {
     |            inserted into the workspace table.
     *------------------------------------------------------------------------*/
     private static int createWorkspace(Connection conn, int userID, String name) {
+        // make sure that the user exists
+        String checkExists = "SELECT COUNT(*) FROM orvik.Users WHERE userId = ?";
+        try {
+            PreparedStatement stmt = conn.prepareStatement(checkExists);
+            // specific user
+            stmt.setInt(1, userID);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() && !(rs.getInt(1) > 0)) {
+                // no one exists
+                System.err.format("Cannot create workspace, user doesn't exist.\n");
+                stmt.close();
+                rs.close();
+                // return false because user doesn't exist
+                return -1;
+            }
+        } catch (SQLException e) {
+            // catch sql exceptions
+            System.err.println("Could not read table: " + e.getMessage());
+            return -1;
+        }
+        
         // sql statement for creating a new workspace
         String sqlStatement = "INSERT INTO orvik.workspace (workspaceId, name) VALUES (orvik.workspace_seq.nextval, ?)";
         try {
@@ -1396,6 +1417,28 @@ public class Prog4 {
     |            were any issues in sql, false is returned.
     *------------------------------------------------------------------------*/
     private static boolean changeWorkspaceName(Connection conn, int workspaceID, String newName) {
+        // make sure that the workspace exists
+        String checkExists = "SELECT COUNT(*) FROM orvik.workspace WHERE workspaceId = ?";
+        try {
+            PreparedStatement stmt = conn.prepareStatement(checkExists);
+            // specific user
+            stmt.setInt(1, workspaceID);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() && !(rs.getInt(1) > 0)) {
+                // no one exists
+                System.err.format("Cannot change workspace %d, it doesn't exist.\n",
+                        workspaceID);
+                stmt.close();
+                rs.close();
+                // return false because user doesn't exist
+                return false;
+            }
+        } catch (SQLException e) {
+            // catch sql exceptions
+            System.err.println("Could not read table: " + e.getMessage());
+            return false;
+        }
+
         // sql statement to change workspace name
         String sqlStatement = "UPDATE orvik.workspace SET name = ? WHERE workspaceId = ?";
         try {
@@ -1454,6 +1497,29 @@ public class Prog4 {
     |            conversation is inserted into the convo table.
     *------------------------------------------------------------------------*/
     private static int addWorkspaceConvo(Connection conn, int userID, int personaID, int workspaceID, String title) {
+        // make sure that the workspace membership exists
+        String checkExists = "SELECT COUNT(*) FROM orvik.workspaceMembership WHERE userId = ? AND workspaceId = ?";
+        try {
+            PreparedStatement stmt = conn.prepareStatement(checkExists);
+            // specific user
+            stmt.setInt(1, userID);
+            stmt.setInt(2, workspaceID);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() && !(rs.getInt(1) > 0)) {
+                // no one exists
+                System.err.format("Cannot add conversation, workspace membership doesn't exist.\n",
+                        userID);
+                stmt.close();
+                rs.close();
+                // return false because user doesn't exist
+                return -1;
+            }
+        } catch (SQLException e) {
+            // catch sql exceptions
+            System.err.println("Could not read table: " + e.getMessage());
+            return -1;
+        }
+        
         // sql statement to get items in workspaceMembership with specific userId and
         // workspaceId
         String belongs = "SELECT COUNT(*) FROM orvik.workspaceMembership WHERE workspaceId = ? AND userId = ?";
