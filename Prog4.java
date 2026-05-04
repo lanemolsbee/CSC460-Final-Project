@@ -129,6 +129,8 @@ public class Prog4 {
         // SHOW OPTIONS
         System.out.println("");
         System.out.println(help);
+        System.out.println("   <> Syntax Example: 'functionalities 1' is acceptable, 'functionalities <1/2>' is not.");
+        System.out.println("   Also, all '' represent string contents. You should not actually type these out.");
         System.out.println("");
 
         while (loopRun == true) {
@@ -254,7 +256,7 @@ public class Prog4 {
         System.out.println("      'query4 <int USERID>'");
         System.out.println("~ ~ ~");
         System.out.println("");
-        System.out.println("EXAMPLE: 'query4 6'");
+        System.out.println("EXAMPLE: 'query4 1'");
         System.out.println("");
     }
 
@@ -675,14 +677,15 @@ public class Prog4 {
     *------------------------------------------------------------------------*/
     private static void query4(int userId, Connection con) {
         try {
-            String query = " SELECT c.title, AVG(f.rating) AS avg_rating " +
-                    "FROM orvik.conversation c " +
-                    "JOIN orvik.message m ON c.conversationId = m.conversationId " +
-                    "JOIN orvik.feedback f ON m.messageId = f.messageId " +
-                    "WHERE c.userId = :? " +
-                    "GROUP BY c.conversationId, c.itle " +
-                    "ORDER BY avg_rating DESC " +
-                    "FETCH FIRST 5 ROWS ONLY";
+            String query = "SELECT * FROM ( " +
+                "  SELECT c.title, AVG(f.rating) AS avg_rating " +
+                "  FROM orvik.conversation c " +
+                "  JOIN orvik.message m ON c.conversationId = m.conversationId " +
+                "  JOIN orvik.feedback f ON m.messageId = f.messageId " +
+                "  WHERE c.userId = ? " +
+                "  GROUP BY c.conversationId, c.title " +
+                "  ORDER BY avg_rating DESC " +
+                ") WHERE ROWNUM <= 5";
             PreparedStatement stmt = con.prepareStatement(query);
             stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();
