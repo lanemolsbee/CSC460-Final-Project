@@ -818,6 +818,28 @@ public class Prog4 {
     |            or the value cannot be changed, false is returned.
     *------------------------------------------------------------------------*/
     private static boolean updateUser(Connection conn, int userID, String toUpdate, String changeStr, int newTier) {
+        // make sure that the user exists
+        String checkExists = "SELECT COUNT(*) FROM orvik.Users WHERE userId = ?";
+        try {
+            PreparedStatement stmt = conn.prepareStatement(checkExists);
+            // specific user
+            stmt.setInt(1, userID);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() && !(rs.getInt(1) > 0)) {
+                // no one exists
+                System.err.format("Cannot change user %d, it doesn't exist.\n",
+                        userID);
+                stmt.close();
+                rs.close();
+                // return false because user doesn't exist
+                return false;
+            }
+        } catch (SQLException e) {
+            // catch sql exceptions
+            System.err.println("Could not read table: " + e.getMessage());
+            return false;
+        }
+        
         // if toUpdate is "name"
         if (toUpdate.equals("name")) {
             // sql statement to change the name with the specific userId
@@ -976,6 +998,28 @@ public class Prog4 {
             return false;
         }
 
+        // make sure that the user exists
+        String checkExists = "SELECT COUNT(*) FROM orvik.Users WHERE userId = ?";
+        try {
+            PreparedStatement stmt = conn.prepareStatement(checkExists);
+            // specific user
+            stmt.setInt(1, userID);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() && !(rs.getInt(1) > 0)) {
+                // no one exists
+                System.err.format("Cannot delete user %d, it doesn't exist.\n",
+                        userID);
+                stmt.close();
+                rs.close();
+                // return false because user doesn't exist
+                return false;
+            }
+        } catch (SQLException e) {
+            // catch sql exceptions
+            System.err.println("Could not read table: " + e.getMessage());
+            return false;
+        }
+
         // now we've passed both conditions
         // sql statement to delete the specific user by userId
         String sqlStatement = "DELETE FROM orvik.Users WHERE userId = ?";
@@ -989,7 +1033,7 @@ public class Prog4 {
             return true;
         } catch (SQLException e) {
             // catch sql exceptions
-            System.err.println("Could not write to the table: " + e.getMessage());
+            System.err.println("Could not delete from table: " + e.getMessage());
             return false;
         }
     }
