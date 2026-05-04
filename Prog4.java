@@ -1012,6 +1012,19 @@ public class Prog4 {
         }
 
         // now we've passed both conditions
+        // need to delete from other tables:
+        // from conversation
+        String deleteConvo = "DELETE FROM orvik.conversation WHERE userId = ?";
+        // from persona
+        String deletePersona = "DELETE FROM orvik.persona WHERE userId = ?";
+        // from billing profile
+        String deleteBilling = "DELETE FROM orvik.billingProfile WHERE userId = ?";
+        // from prompt template
+        String deletePrompt = "DELETE FROM orvik.promptTemplate WHERE userId = ?";
+        // from supportTicket
+        String deleteSupport = "DELETE FROM orvik.supportTicket WHERE userId = ?";
+        // from invoice
+        String deleteInvoice = "DELETE FROM orvik.invoice WHERE userId = ?";
         // sql statement to delete the specific user by userId
         String sqlStatement = "DELETE FROM orvik.Users WHERE userId = ?";
         try {
