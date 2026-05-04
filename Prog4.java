@@ -755,13 +755,13 @@ public class Prog4 {
             // membership tierID parameter added
             stmt.setInt(5, tierID);
             stmt.executeUpdate();
-            stmt.close();
 
             // userId generated
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
                 userId = rs.getInt(1);
             }
+            stmt.close();
             // new userId returned
             return userId;
         } catch (SQLException e) {
@@ -1249,12 +1249,12 @@ public class Prog4 {
             // add in the name
             stmt.setString(1, name);
             stmt.executeUpdate();
-            stmt.close();
             // generate the workspaceId value
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
                 workspaceId = rs.getInt(1);
             }
+            stmt.close();
             // call the method to create the connection to user
             createMembership(conn, userID, workspaceId);
             // return the uniquely generated workspaceId
@@ -1594,13 +1594,13 @@ public class Prog4 {
             // add workspaceID parameter
             stmt.setInt(4, workspaceID);
             stmt.executeUpdate();
-            stmt.close();
 
             // generate templateId
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
                 templateId = rs.getInt(1);
             }
+            stmt.close();
             // return the generated templateId
             return templateId;
         } catch (SQLException e) {
@@ -1842,13 +1842,13 @@ public class Prog4 {
             // set status to unpaid
             stmt.setString(4, "UNPAID");
             stmt.executeUpdate();
-            stmt.close();
 
             // generate invoiceId
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
                 invoiceId = rs.getInt(1);
             }
+            stmt.close();
             // return newly generated invoiceId
             return invoiceId;
         } catch (SQLException e) {
