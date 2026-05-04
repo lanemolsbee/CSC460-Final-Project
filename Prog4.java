@@ -2102,6 +2102,27 @@ public class Prog4 {
             System.err.println("Could not read table: " + e.getMessage());
             return false;
         }
+
+        // make sure that the user exists
+        String checkPaid = "SELECT status FROM orvik.invoice WHERE invoiceId = ?";
+        try {
+            PreparedStatement stmt = conn.prepareStatement(checkPaid);
+            // specific user
+            stmt.setInt(1, invoiceID);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() && (rs.getString(1).equals("PAID"))) {
+                // no one exists
+                System.err.format("Cannot pay bill, bill has already been paid.\n");
+                stmt.close();
+                rs.close();
+                // return false because user doesn't exist
+                return false;
+            }
+        } catch (SQLException e) {
+            // catch sql exceptions
+            System.err.println("Could not read table: " + e.getMessage());
+            return false;
+        }
         
         // statement to update invoice status to "PAID"
         String sqlStatement = "UPDATE orvik.invoice SET status = ? WHERE invoiceId = ?";
