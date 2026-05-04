@@ -29,5 +29,5 @@
     - Query #2 -- Annabelle
     - Query #3 -- Pearl
     - Query #4 -- Lane
-- Interface -- Annabelle
+- Interface -- Annabelle, Jordan (Regex for multi-word string arguments)
 - Final Product Document -- Lane and Annabelle
