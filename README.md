@@ -7,7 +7,7 @@
     - Now, compile:
         - javac Prog4.java
     - Finally, run:
-        - java Prog4 <oracle username> <oracle password>
+        - java Prog4 [oracle username] [oracle password]
     - Once the program runs, there are further instructions
         - There are two options:
             - 'queries' which gives all query options
