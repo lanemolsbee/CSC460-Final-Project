@@ -61,6 +61,7 @@ public class Prog4 {
         Connection conn = null;
         try {
             conn = DriverManager.getConnection(oracleURL, username, password);
+            conn.setAutoCommit(true);
         }
 
         // Oops - password may be incorrect.
@@ -72,6 +73,7 @@ public class Prog4 {
             System.err.println("\tErrorCode: " + e.getErrorCode());
             System.exit(-1);
         }
+        
 
         // Run loop
         loopMechanism(conn);
@@ -1961,6 +1963,7 @@ public class Prog4 {
                 if (rs.next()) {
                     int totalMsgs = rs.getInt("totalMsgs");
                     int limit = rs.getInt("msgLimit");
+                    System.err.println("status: totalMsgs: " + totalMsgs + " limit: " + limit);
                     return totalMsgs < limit;
                 }
             }
