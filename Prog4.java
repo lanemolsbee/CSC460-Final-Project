@@ -1044,14 +1044,18 @@ public class Prog4 {
             stmt.setInt(4, personaID);
             stmt.setInt(5, workspaceID);
             stmt.executeUpdate();
-            stmt.close();
+            
 
             // We are using SQL sequence to get the ID of the new conversation, so we need
             // to get it.
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
-                return rs.getInt(1);
+                int result = rs.getInt(1);
+                stmt.close();
+                return result;
             }
+            stmt.close();
+            
             // not found!
             return -1;
 
@@ -1104,13 +1108,14 @@ public class Prog4 {
             stmt.setString(3, message);
             stmt.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
             stmt.executeUpdate();
-            stmt.close();
+            
 
             // Get the ID of the new message.
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
                 messageID = rs.getInt(1);
             }
+            stmt.close();
             return messageID;
         } catch (SQLException e) {
             System.err.println("Could not write to the table: " + e.getMessage());
@@ -1473,12 +1478,13 @@ public class Prog4 {
             stmt.setString(1, name);
             stmt.setString(2, directive);
             stmt.executeUpdate();
-            stmt.close();
+            
 
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
                 personaID = rs.getInt(1);
             }
+            stmt.close();
             return personaID;
         } catch (SQLException e) {
             System.err.println("Could not write to the table: " + e.getMessage());
@@ -1947,12 +1953,13 @@ public class Prog4 {
             // new ticket, so it is open.
             stmt.setString(5, "OPEN");
             stmt.executeUpdate();
-            stmt.close();
+            
 
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
                 ticketID = rs.getInt(1);
             }
+            stmt.close();
             return ticketID;
         } catch (SQLException e) {
             System.err.println("Could not create ticket! : " + e.getMessage());
