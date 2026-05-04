@@ -1866,6 +1866,7 @@ public class Prog4 {
             }
         }
         // return false if invalid toUpdate value
+        System.err.format("Cannot change prompt template, incorrect update category.\n");
         return false;
     }
 
