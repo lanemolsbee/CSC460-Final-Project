@@ -136,7 +136,7 @@ public class Prog4 {
         System.out.println(help);
         System.out.println("   <> Syntax Example: 'functionalities 1' is acceptable, 'functionalities <1/2>' is not.");
         System.out.println("   Also, all '' represent string contents. You should not actually type these out.");
-        System.out.println('   Additionally, string args that contain spaces must be capped "in quotes".');
+        System.out.println("   Additionally, string args that contain spaces must be capped \"in quotes\".");
         System.out.println("");
 
         while (loopRun == true) {
