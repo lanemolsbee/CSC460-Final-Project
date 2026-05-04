@@ -184,13 +184,11 @@ public class Prog4 {
             System.out.println("      create user: 'user.create <string NAME> <string EMAIL> <string LANGUAGE> <int TIER>'");
             System.out.println("      change user information: 'user.change <int USERID> <'name'/'email'/'language'/'tierId'> <string NEW VALUE> <int NEW TIER>'");
             System.out.println("      delete user: 'user.delete <int USERID>'");
-            System.out.println("   CONVERSATION...");
-            System.out.println("      create convo: 'convo.create <int USERID> <int PERSONAID> <int WORKSPACEID> <string TITLE>'");
+            System.out.println("   CONVERSATION...");;
             System.out.println("      add msg to convo: 'convo.add <int CONVOID> <string MESSAGE>'");
             System.out.println("      add feedback to msg: 'convo.feedback <int MESSAGEID> <int RATING> <string FEEDBACK>'");
             System.out.println("   WORKSPACE...");
             System.out.println("      create workspace: 'workspace.create <int USERID> <string NAME>'");
-            System.out.println("      create membership: 'workspace.member <int USERID> <int WORKSPACEID>'");
             System.out.println("      change workspace name: 'workspace.change <int WORKSPACEID> <string NEW NAME>'");
             System.out.println("      add convo to workspace: 'workspace.add <int USERID> <int PERSONAID> <int WORKSPACEID> <string TITLE>'");
             System.out.println("   PERSONA...");
@@ -343,14 +341,7 @@ public class Prog4 {
             }
         } 
         // Conversation
-        else if ((split[0].contentEquals("convo.create")) && (split.length == 5)) {
-            if ((isViable(split[1], "int")) && (isViable(split[2], "int")) && (isViable(split[3], "int"))) {
-                iRes = newConvo(conn, Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]), split[4]);
-                if (iRes != -1)
-                    System.out.println("CONVERSATION ADDED HAS CONVOID: " + iRes);
-                return numFails;
-            }
-        } else if ((split[0].contentEquals("convo.add")) && (split.length == 3)) {
+        else if ((split[0].contentEquals("convo.add")) && (split.length == 3)) {
             if (isViable(split[1], "int")) {
                 // Check if within limit before attempting to add a message
                 if (withinLimit(conn, Integer.parseInt(split[1]))) {
@@ -375,12 +366,6 @@ public class Prog4 {
                 iRes = createWorkspace(conn, Integer.parseInt(split[1]), split[2]);
                 if (iRes != -1)
                     System.out.println("WORKSPACE ADDED HAS WORKSPACEID: " + iRes);
-                return numFails;
-            }
-        } else if ((split[0].contentEquals("workspace.member")) && (split.length == 3)) {
-            if ((isViable(split[1], "int")) && (isViable(split[2], "int"))) {
-                if (createMembership(conn, Integer.parseInt(split[1]), Integer.parseInt(split[2])))
-                    System.out.println("MEMBERSHIP ADDED");
                 return numFails;
             }
         } else if ((split[0].contentEquals("workspace.change")) && (split.length == 3)) {
@@ -2248,7 +2233,7 @@ public class Prog4 {
     *------------------------------------------------------------------------*/
     private static boolean isViable(String num, String doubOrInt)
     {
-        if (doubOrInt.contentEquals("double")) {
+        if (doubOrInt.contentEquals("int")) {
             // Try-catch convert the String num to an int
             try
             {
