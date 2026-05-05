@@ -344,9 +344,8 @@ public class Prog4 {
         } else if ((split[0].contentEquals("user.delete")) && (split.length == 2)) {
             if (isViable(split[1], "int")) {
                 // When deleting a User, delete their messages too!
-                if (deleteUserMessages(conn, Integer.parseInt(split[1]))) {
-                    if (deleteUser(conn, Integer.parseInt(split[1])))
-                        System.out.println("USER HAS BEEN DELETED");
+                if (deleteUser(conn, Integer.parseInt(split[1]))) {
+                    System.out.println("USER HAS BEEN DELETED");
                 }
                 return numFails;
             }
@@ -1032,6 +1031,23 @@ public class Prog4 {
         // sql statement to delete the specific user by userId
         String sqlStatement = "DELETE FROM orvik.Users WHERE userId = ?";
         try {
+            // delete user messages, feedback, and bookmarks first
+            deleteUserMessages(conn, userID);
+
+            // delete all of a user's conversations
+            PreparedStatement stmtCon = conn.prepareStatement(deleteConvo);
+            // specific user
+            stmtCon.setInt(1, userID);
+            stmtCon.executeUpdate();
+            stmtCon.close();
+
+            // delete all of a user's templates
+            PreparedStatement stmtPro = conn.prepareStatement(deletePrompt);
+            // specific user
+            stmtPro.setInt(1, userID);
+            stmtPro.executeUpdate();
+            stmtPro.close();
+
             // delete a user's membership
             PreparedStatement stmtMem = conn.prepareStatement(deleteMem);
             // specific user
@@ -1043,13 +1059,6 @@ public class Prog4 {
             PreparedStatement stmtWor = conn.prepareStatement(deleteWor);
             stmtWor.executeUpdate();
             stmtWor.close();
-
-            // delete all of a user's conversations
-            PreparedStatement stmtCon = conn.prepareStatement(deleteConvo);
-            // specific user
-            stmtCon.setInt(1, userID);
-            stmtCon.executeUpdate();
-            stmtCon.close();
 
             // delete all of a user's personas
             PreparedStatement stmtPer = conn.prepareStatement(deletePersona);
@@ -1064,13 +1073,6 @@ public class Prog4 {
             stmtBill.setInt(1, userID);
             stmtBill.executeUpdate();
             stmtBill.close();
-
-            // delete all of a user's templates
-            PreparedStatement stmtPro = conn.prepareStatement(deletePrompt);
-            // specific user
-            stmtPro.setInt(1, userID);
-            stmtPro.executeUpdate();
-            stmtPro.close();
 
             // delete all of a user's support tickets
             PreparedStatement stmtSup = conn.prepareStatement(deleteSupport);
