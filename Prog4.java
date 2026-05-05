@@ -2209,7 +2209,7 @@ public class Prog4 {
                 if (rs.next()) {
                     int totalMsgs = rs.getInt("totalMsgs");
                     int limit = rs.getInt("msgLimit");
-                    System.err.println("status: totalMsgs: " + totalMsgs + " limit: " + limit);
+                    System.err.println("messages sent w/ this one: " + totalMsgs+1 + " limit: " + limit);
                     return totalMsgs < limit;
                 }
             }
