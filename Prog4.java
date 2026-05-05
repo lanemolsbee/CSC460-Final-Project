@@ -1,3 +1,48 @@
+/*--------------------------------------------------------------------------------
+*||   Author: Jordan Orvik, Frances Pearl McNabb, Lane Molsbee, Annabelle Jonatan
+*||
+*||   Assignment: Program #4: Database Design and Implementation
+*||
+*||   Due Date: 04/05/2026
+*||
+*||   Course: CSC 460 -- Database Design
+*||
+*||   Instructor: Dr. Lester McCann
+*||          TAs: Jianwei (James) Shen and Muhammad Bilal
+*||
+*||   Description: The main goal of this program is to design a DBMS based on
+*||                a "user-facing" ecosystem for users of an LLM (large language model)
+*||                AI querying model. This program organizes and helps perform
+*||                all the ways a user can interact with the ecosystem and get help.
+*||                
+*||                This program builds a DBMS from scratch (logical and conceptual
+*||                design done separately). It defines 8 program functionalities, and 
+*||                allows for user interaction with all functionalities, and a preset
+*||                group of SQL queries using a text-based JDBC program interface. The
+*||                system revolves around the "user", which can have workspaces, 
+*||                conversations, invoices, billing information, membership, templates,
+*||                support tickets with agents, and bookmarks. With each of these 
+*||                interactions (further detail in logical/conceptual design), there is
+*||                a set number of actions a user can take (usually create, change, delete)
+*||                with the functionalities. 
+*||                
+*||   Operational Requirements: Java 25 or earlier
+*||         
+*||   To compile and execute this program on lectura:
+*||
+*||         Add the Oracle JDBC driver to your CLASSPATH environment variable:
+*||             export CLASSPATH=/usr/lib/oracle/19.8/client64/lib/ojdbc8.jar:${CLASSPATH}
+*||
+*||         Compile:
+*||             javac Prog4.java
+*||
+*||         Finally, run:
+*||             java Prog4 <oracle username> <oracle password>
+*||
+*||
+*||   Missing Features: None.
+*||
+--------------------------------------------------------------------------------*/
 import java.sql.*;
 //import java.time.*;
 import java.util.*;
