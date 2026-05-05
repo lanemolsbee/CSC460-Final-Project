@@ -24,7 +24,16 @@
 *||                support tickets with agents, and bookmarks. With each of these 
 *||                interactions (further detail in logical/conceptual design), there is
 *||                a set number of actions a user can take (usually create, change, delete)
-*||                with the functionalities. 
+*||                with the functionalities. A brief description of the functionalities are
+*||                as follows:
+*||                         1. Manage User Accounts: add, update, or delete a user
+*||                         2. Handle Conversations & Messages: start new convo, add messages, update feedback
+*||                         3. Workspace Organization: create or modify a workspace owned by a user
+*||                         4. Persona Management: create or delete personas (able to customize)
+*||                         5. Prompt Library: add/update prompt templates (content strings for use by user)
+*||                         6. Subscription Tracking: update a user's subscription (must meet requirements)
+*||                         7. Billing Operations: create a new invoice for a user (can pay)
+*||                         8. Support Ticket Lifecycle: can create/close support tickets by agent to help a user
 *||                
 *||   Operational Requirements: Java 25 or earlier
 *||         
