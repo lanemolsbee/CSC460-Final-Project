@@ -1013,6 +1013,10 @@ public class Prog4 {
 
         // now we've passed both conditions
         // need to delete from other tables:
+        // from workspace membership
+        String deleteMem = "DELETE FROM orvik.workspaceMembership WHERE userId = ?";
+        // from workspace
+        String deleteWor = "DELETE FROM orvik.workspace WHERE workspaceId NOT IN (SELECT workspaceId FROM orvik.workspaceMembership)";
         // from conversation
         String deleteConvo = "DELETE FROM orvik.conversation WHERE userId = ?";
         // from persona
@@ -1028,6 +1032,61 @@ public class Prog4 {
         // sql statement to delete the specific user by userId
         String sqlStatement = "DELETE FROM orvik.Users WHERE userId = ?";
         try {
+            // delete a user's membership
+            PreparedStatement stmtMem = conn.prepareStatement(deleteMem);
+            // specific user
+            stmtMem.setInt(1, userID);
+            stmtMem.executeUpdate();
+            stmtMem.close();
+
+            // delete the workspace
+            PreparedStatement stmtWor = conn.prepareStatement(deleteWor);
+            stmtWor.executeUpdate();
+            stmtWor.close();
+
+            // delete all of a user's conversations
+            PreparedStatement stmtCon = conn.prepareStatement(deleteConvo);
+            // specific user
+            stmtCon.setInt(1, userID);
+            stmtCon.executeUpdate();
+            stmtCon.close();
+
+            // delete all of a user's personas
+            PreparedStatement stmtPer = conn.prepareStatement(deletePersona);
+            // specific user
+            stmtPer.setInt(1, userID);
+            stmtPer.executeUpdate();
+            stmtPer.close();
+
+            // delete all of a user's billing
+            PreparedStatement stmtBill = conn.prepareStatement(deleteBilling);
+            // specific user
+            stmtBill.setInt(1, userID);
+            stmtBill.executeUpdate();
+            stmtBill.close();
+
+            // delete all of a user's templates
+            PreparedStatement stmtPro = conn.prepareStatement(deletePrompt);
+            // specific user
+            stmtPro.setInt(1, userID);
+            stmtPro.executeUpdate();
+            stmtPro.close();
+
+            // delete all of a user's support tickets
+            PreparedStatement stmtSup = conn.prepareStatement(deleteSupport);
+            // specific user
+            stmtSup.setInt(1, userID);
+            stmtSup.executeUpdate();
+            stmtSup.close();
+
+            // delete all of a user's invoices
+            PreparedStatement stmtInv = conn.prepareStatement(deleteInvoice);
+            // specific user
+            stmtInv.setInt(1, userID);
+            stmtInv.executeUpdate();
+            stmtInv.close();
+            
+            // delete the user
             PreparedStatement stmt = conn.prepareStatement(sqlStatement);
             // specific user
             stmt.setInt(1, userID);
@@ -1240,13 +1299,13 @@ public class Prog4 {
 
         // FK constraints requires us to recursively delete things.
         // 1. Delete Bookmarks attached to this user's messages
-        String delBookmarks = "DELETE FROM bookmark WHERE messageId IN (SELECT m.messageId FROM message m JOIN conversation c ON m.conversationId = c.conversationId WHERE c.userId = ?)";
+        String delBookmarks = "DELETE FROM orvik.bookmark WHERE messageId IN (SELECT m.messageId FROM orvik.message m JOIN orvik.conversation c ON m.conversationId = c.conversationId WHERE c.userId = ?)";
 
         // 2. Delete Feedback attached to this user's messages
-        String delFeedback = "DELETE FROM feedback WHERE messageId IN (SELECT m.messageId FROM message m JOIN conversation c ON m.conversationId = c.conversationId WHERE c.userId = ?)";
+        String delFeedback = "DELETE FROM orvik.feedback WHERE messageId IN (SELECT m.messageId FROM orvik.message m JOIN orvik.conversation c ON m.conversationId = c.conversationId WHERE c.userId = ?)";
 
         // 3. Delete the Messages themselves
-        String delMessages = "DELETE FROM message WHERE conversationId IN (SELECT conversationId FROM conversation WHERE userId = ?)";
+        String delMessages = "DELETE FROM orvik.message WHERE conversationId IN (SELECT conversationId FROM orvik.conversation WHERE userId = ?)";
 
         try {
             // delete Bookmarks
