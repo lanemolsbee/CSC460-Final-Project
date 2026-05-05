@@ -1015,7 +1015,7 @@ public class Prog4 {
         // from workspace membership
         String deleteMem = "DELETE FROM orvik.workspaceMembership WHERE userId = ?";
         // from workspace
-        String deleteWor = "DELETE FROM orvik.workspace WHERE workspaceId NOT IN (SELECT workspaceId FROM orvik.workspaceMembership)";
+        String deleteWor = "DELETE FROM orvik.workspace WHERE workspaceId IN (SELECT workspaceId FROM orvik.workspaceMembership WHERE userId = ?)";
         // from conversation
         String deleteConvo = "DELETE FROM orvik.conversation WHERE userId = ?";
         // from persona
@@ -1057,8 +1057,11 @@ public class Prog4 {
 
             // delete the workspace
             PreparedStatement stmtWor = conn.prepareStatement(deleteWor);
+            // specific user
+            stmtWor.setInt(1, userID);
             stmtWor.executeUpdate();
             stmtWor.close();
+
 
             // delete all of a user's personas
             PreparedStatement stmtPer = conn.prepareStatement(deletePersona);
