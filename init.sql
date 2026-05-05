@@ -18,6 +18,15 @@ DROP TABLE Users CASCADE CONSTRAINTS;
 DROP TABLE membershipTier CASCADE CONSTRAINTS;
 DROP TABLE agent CASCADE CONSTRAINTS;
 
+DROP SEQUENCE convo_seq;
+DROP SEQUENCE message_seq;
+DROP SEQUENCE persona_seq;
+DROP SEQUENCE ticket_seq;
+DROP SEQUENCE Users_seq;
+DROP SEQUENCE workspace_seq;
+DROP SEQUENCE promptTemplate_seq;
+DROP SEQUENCE invoice_seq;
+
 -- Create sequences from 100 for all tables wiht auto-incrementing primary keys. 
 -- This allows us to easily insert new data without worrying about PK conflicts. 
 CREATE SEQUENCE convo_seq START WITH 100 INCREMENT BY 1;
@@ -273,7 +282,7 @@ INSERT INTO workspace VALUES (2, 'AI Research');
 INSERT INTO conversation VALUES (1, 1, 'AWS Setup', CURRENT_TIMESTAMP, 3, 1);
 INSERT INTO conversation VALUES (2, 2, 'Python Basics', CURRENT_TIMESTAMP, 2, NULL);
 INSERT INTO conversation VALUES (3, 3, 'AI Trends', CURRENT_TIMESTAMP, 1, 2);
-INSERT INTO conversation VALUES (4, 1, 'Database Design', CURRENT_TIMESTAMP, NULL, NULL);
+INSERT INTO conversation VALUES (4, 4, 'Database Design', CURRENT_TIMESTAMP, NULL, NULL);
 
 -- =========================
 -- 7. message
