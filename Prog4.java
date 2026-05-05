@@ -245,6 +245,7 @@ public class Prog4 {
             System.out.println("      add msg to convo: 'convo.add <int CONVOID> <string MESSAGE> <int USERID>'");
             System.out.println(
                     "      add feedback to msg: 'convo.feedback <int MESSAGEID> <int RATING> <string FEEDBACK>'");
+            System.out.println("      bookmark msg: 'convo.mark <int MESSAGEID> <int USERID>'");
             System.out.println("   WORKSPACE...");
             System.out.println("      create workspace: 'workspace.create <int USERID> <string NAME>'");
             System.out.println("      change workspace name: 'workspace.change <int WORKSPACEID> <string NEW NAME>'");
@@ -421,6 +422,12 @@ public class Prog4 {
             if ((isViable(split[1], "int")) && (isViable(split[2], "int"))) {
                 if (updateMsgFeedback(conn, Integer.parseInt(split[1]), Integer.parseInt(split[2]), split[3]))
                     System.out.println("MESSAGE FEEDBACK HAS BEEN UPDATED");
+                return numFails;
+            }
+        } else if ((split[0].contentEquals("convo.mark")) && (split.length == 3)) {
+            if ((isViable(split[1], "int")) && (isViable(split[2], "int"))) {
+                if (addBookmark(conn, Integer.parseInt(split[1]), Integer.parseInt(split[2])))
+                    System.out.println("MESSAGE BOOKMARK HAS BEEN ADDED");
                 return numFails;
             }
         }
@@ -1388,6 +1395,115 @@ public class Prog4 {
             return true;
         } catch (SQLException e) {
             System.err.println("Could not delete messages (invalid user, perhaps?): " + e.getMessage());
+            return false;
+        }
+    }
+
+    /*-------------------------------------------------------------------------
+    |   Method addBookmark(Connection conn, int messageId, int userId)
+    |
+    |   Purpose: This method adds in a bookmark based on a user and its 
+    |            message. A user must own the message in order to bookmark it
+    |            in the bookmark table.
+    |
+    |   Pre-Condition: A bookmark, message, and user tables all exist. 
+    |                  This means that the tables are prepared to add
+    |                  in a bookmark for a message.
+    |
+    |   Post-Condition: A bookmark has been successfully added if a user
+    |                   owns a message with the given IDs.
+    |
+    |   Parameters: 
+    |       conn -- The Connection to JDBC to connect to SQL.
+    |       userID -- Represents a user to connect the user to a message
+    |                 to create a bookmark.
+    |       messageID -- Represents a message to be bookmarked.
+    |
+    |   Returns: A boolean representing whether or bookmark creation was
+    |            successfully created.
+    *------------------------------------------------------------------------*/
+    private static boolean addBookmark(Connection conn, int messageID, int userID) {
+        // make sure that the user exists
+        String checkExistsUse = "SELECT COUNT(*) FROM orvik.Users WHERE userId = ?";
+        try {
+            PreparedStatement stmt = conn.prepareStatement(checkExistsUse);
+            // specific user
+            stmt.setInt(1, userID);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() && !(rs.getInt(1) > 0)) {
+                // no one exists
+                System.err.format("Cannot create bookmark, user doesn't exist.\n");
+                stmt.close();
+                rs.close();
+                // return false because user doesn't exist
+                return false;
+            }
+        } catch (SQLException e) {
+            // catch sql exceptions
+            System.err.println("Could not read table: " + e.getMessage());
+            return false;
+        }
+
+        // make sure that the message exists
+        String checkExistsMem = "SELECT COUNT(*) FROM orvik.message WHERE messageId = ?";
+        try {
+            PreparedStatement stmt = conn.prepareStatement(checkExistsMem);
+            // specific user
+            stmt.setInt(1, messageID);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() && !(rs.getInt(1) > 0)) {
+                // no one exists
+                System.err.format("Cannot create bookmark, message doesn't exist.\n");
+                stmt.close();
+                rs.close();
+                // return false because message doesn't exist
+                return false;
+            }
+        } catch (SQLException e) {
+            // catch sql exceptions
+            System.err.println("Could not read table: " + e.getMessage());
+            return false;
+        }
+
+        // make sure the user owns the bookmark/message
+        String owner = "SELECT COUNT(*) FROM orvik.message m " +
+                        "JOIN orvik.conversation c ON m.conversationId = c.conversationId " +
+                        "WHERE m.messageId = ? AND c.userId = ?";
+        try {
+            PreparedStatement stmt = conn.prepareStatement(owner);
+            // specific user
+            stmt.setInt(1, messageID);
+            stmt.setInt(2, userID);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() && !(rs.getInt(1) > 0)) {
+                // no one exists
+                System.err.format("Cannot create bookmark, user doesn't own message.\n");
+                stmt.close();
+                rs.close();
+                // return false
+                return false;
+            }
+        } catch (SQLException e) {
+            // catch sql exceptions
+            System.err.println("Could not read table: " + e.getMessage());
+            return false;
+        }
+
+
+        // now add in the bookmark
+        String sqlStatement = "INSERT INTO orvik.bookmark (userId, messageId) VALUES (?, ?)";
+        try {
+            PreparedStatement stmt = conn.prepareStatement(sqlStatement);
+            // add in the userId
+            stmt.setInt(1, userID);
+            // add in the messageId
+            stmt.setInt(2, messageID);
+            stmt.executeUpdate();
+            stmt.close();
+            return true;
+        } catch (SQLException e) {
+            // catch sql exceptions
+            System.err.println("Could not create a new bookmark! : " + e.getMessage());
             return false;
         }
     }
